@@ -174,17 +174,25 @@ int bool_xor(int x,int y){
 #### 2.14 逻辑运算与位级运算比较
 假设x和y的值分别是0x66和0x39，填写下表:  
 
-|  值   |  二进制 |
-| :-------- | :-------|
-| 0x66  | 0110 0110 |
-| 0x39  | 0011 1001 |
+|  值   |  二进制 |~|
+| :-- | :--|:--|
+| 0x66  | 0110 0110 |1001 1001|
+| 0x39  | 0011 1001 |1100 0110|
 
 |  表达式   |  值 ||  表达式   |  值 |
-| :--: | :--:|:--:| :--:|
-| x & y  | 0110 0110 | x && y| 0x01|
-| x &#124; y  | 0011 1001|x &#124;&#124;y|0x01|
+| :-- | :--|:--| :--|
+| x & y  | 0010 0000=0x20 | | x && y|0x01|
+| x &#124; y  | 0111 1111=0x7F||x &#124;&#124;y|0x01|
+| ~x &#124; ~y  | 1101 1111=0xDF||~x &#124;&#124;~y|0x00|
+| ~x & !y  | 0000 0000=0x00||x && ~y|0x01|
 
+`注意!是逻辑运算符，因此!y=0x00`
 
+#### 2.15 
+只用位级和逻辑运算，编写一个C表达式，它等价于x==y.换句话说，当x和y相等时它将返回1,否则返回0. &nbsp;&nbsp;&nbsp;&nbsp;`!(x^y)`
+
+#### 2.16 位移运算  
+<table><tr><td colspan=2 style="border:1px solid;text-align:center">x</td><td colspan=2 style="border:1px solid;text-align:center">x<<3</td><td colspan=2 style="border:1px solid;text-align:center">x>>2(逻辑的)</td><td colspan=2 style="border:1px solid;text-align:center">x>>2(算术的)</td></tr><tr><td style="border:1px solid;text-align:center">十六进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">十六进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">十六进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">十六进制</td></tr><tr><td style="border-left:1px solid;border-right:1px solid;">0xC3</td><td style="border-right:1px solid;">1100 0011</td><td style="border-right:1px solid;">0001 1000</td><td style="border-right:1px solid;">0x18</td><td style="border-right:1px solid;">0011 0000</td><td style="border-right:1px solid;">0x30</td><td style="border-right:1px solid;">1111 0000</td><td style="border-right:1px solid;">0xF0</td></tr><tr><td style="border-left:1px solid;border-right:1px solid;">0x75</td><td style="border-right:1px solid;">0111 0101</td><td style="border-right:1px solid;">1010 1000</td><td style="border-right:1px solid;">0xA8</td><td style="border-right:1px solid;">0001 1101</td><td style="border-right:1px solid;">0x1D</td><td style="border-right:1px solid;">0001 1101</td><td style="border-right:1px solid;">0x1D</td></tr><tr><td style="border-left:1px solid;border-right:1px solid;">0x87</td><td style="border-right:1px solid;">1000 0111</td><td style="border-right:1px solid;">0011 1000</td><td style="border-right:1px solid;">0x38</td><td style="border-right:1px solid;">0010 0001</td><td style="border-right:1px solid;">0x21</td><td style="border-right:1px solid;">1110 0001</td><td style="border-right:1px solid;">0xE1</td></tr><tr><td style="border-bottom:1px solid;border-left:1px solid;border-right:1px solid;">0x66</td><td style="border-bottom:1px solid;border-right:1px solid;">0110 0110</td><td style="border-bottom:1px solid;border-right:1px solid;">0011 0000</td><td style="border-bottom:1px solid;border-right:1px solid;">0x30</td><td style="border-bottom:1px solid;border-right:1px solid;">0001 1001</td><td style="border-bottom:1px solid;border-right:1px solid;">0x19</td><td style="border-bottom:1px solid;border-right:1px solid;">00001 1001</td><td style="border-bottom:1px solid;border-right:1px solid;">0x19</td></tr></table>
 
 
 

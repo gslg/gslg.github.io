@@ -193,6 +193,114 @@ int bool_xor(int x,int y){
 
 #### 2.16 位移运算  
 <table><tr><td colspan=2 style="border:1px solid;text-align:center">x</td><td colspan=2 style="border:1px solid;text-align:center">x<<3</td><td colspan=2 style="border:1px solid;text-align:center">x>>2(逻辑的)</td><td colspan=2 style="border:1px solid;text-align:center">x>>2(算术的)</td></tr><tr><td style="border:1px solid;text-align:center">十六进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">十六进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">十六进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">十六进制</td></tr><tr><td style="border-left:1px solid;border-right:1px solid;">0xC3</td><td style="border-right:1px solid;">1100 0011</td><td style="border-right:1px solid;">0001 1000</td><td style="border-right:1px solid;">0x18</td><td style="border-right:1px solid;">0011 0000</td><td style="border-right:1px solid;">0x30</td><td style="border-right:1px solid;">1111 0000</td><td style="border-right:1px solid;">0xF0</td></tr><tr><td style="border-left:1px solid;border-right:1px solid;">0x75</td><td style="border-right:1px solid;">0111 0101</td><td style="border-right:1px solid;">1010 1000</td><td style="border-right:1px solid;">0xA8</td><td style="border-right:1px solid;">0001 1101</td><td style="border-right:1px solid;">0x1D</td><td style="border-right:1px solid;">0001 1101</td><td style="border-right:1px solid;">0x1D</td></tr><tr><td style="border-left:1px solid;border-right:1px solid;">0x87</td><td style="border-right:1px solid;">1000 0111</td><td style="border-right:1px solid;">0011 1000</td><td style="border-right:1px solid;">0x38</td><td style="border-right:1px solid;">0010 0001</td><td style="border-right:1px solid;">0x21</td><td style="border-right:1px solid;">1110 0001</td><td style="border-right:1px solid;">0xE1</td></tr><tr><td style="border-bottom:1px solid;border-left:1px solid;border-right:1px solid;">0x66</td><td style="border-bottom:1px solid;border-right:1px solid;">0110 0110</td><td style="border-bottom:1px solid;border-right:1px solid;">0011 0000</td><td style="border-bottom:1px solid;border-right:1px solid;">0x30</td><td style="border-bottom:1px solid;border-right:1px solid;">0001 1001</td><td style="border-bottom:1px solid;border-right:1px solid;">0x19</td><td style="border-bottom:1px solid;border-right:1px solid;">00001 1001</td><td style="border-bottom:1px solid;border-right:1px solid;">0x19</td></tr></table>
+#### 2.17 无符号数、有符号数转换
+{% raw %}
 
-
-
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML">
+</script>
+ <style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:center}
+.tg .tg-nb2d{font-size:100%;border-color:inherit;text-align:center;vertical-align:middle}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:middle}
+.tg .tg-0pky{border-color:inherit;text-align:center;vertical-align:middle}
+.tg .tg-0lax{text-align:center;vertical-align:middle}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-0pky" colspan="2">$\vec{x}$</th>
+    <th class="tg-nb2d" rowspan="2">$B2U_{4}(\vec{x})$</th>
+    <th class="tg-c3ow" rowspan="2">$B2T_{4}(\vec{x})$</th>
+  </tr>
+  <tr>
+    <td class="tg-0pky">十六进制</td>
+    <td class="tg-0pky">二进制</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">0xE</td>
+    <td class="tg-0pky">[1110]</td>
+    <td class="tg-0pky">$2^3+2^2+2^1=14$</td>
+    <td class="tg-0pky">$-2^3+2^2+2^1=-2$</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">0x0</td>
+    <td class="tg-0pky">[0000]</td>
+    <td class="tg-0pky">0</td>
+    <td class="tg-0pky">0</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">0x5</td>
+    <td class="tg-0lax">[0101]</td>
+    <td class="tg-0lax">$2^2+2^1=5$</td>
+    <td class="tg-0lax">5</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">0x8</td>
+    <td class="tg-0lax">[1000]</td>
+    <td class="tg-0lax">$2^3=8$</td>
+    <td class="tg-0lax">$-2^3=-8$</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">0xD</td>
+    <td class="tg-0lax">[1101]</td>
+    <td class="tg-0lax">$2^3+2^2+2^0=13$</td>
+    <td class="tg-0lax">$-2^3+2^2+2^0=-3$</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">0xF</td>
+    <td class="tg-0lax">[1111]</td>
+    <td class="tg-0lax">$2^3+2^2+2^1+2^0=15$</td>
+    <td class="tg-0lax">$-2^3+2^2+2^1+2^0=-1$</td>
+  </tr>
+</table>
+{% endraw %}
+#### 2.19 有符号数转无符号数
+{% raw %}
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-s6z2{text-align:center}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-s6z2">x</th>
+    <th class="tg-s6z2">$T2U_{4}(x)$</th>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-8</td>
+    <td class="tg-s6z2">8</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-3</td>
+    <td class="tg-s6z2">13</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2</td>
+    <td class="tg-s6z2">14</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-1</td>
+    <td class="tg-s6z2">15</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">0</td>
+    <td class="tg-s6z2">0</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">5</td>
+    <td class="tg-s6z2">5</td>
+  </tr>
+</table>
+原理: 补码转无符号数:  
+对满足$TMin_{w} \leqslant x \leqslant TMax_{w}$的x有:
+$$T2U_{w}(x)= \left\{\begin{matrix}
+ & x + 2^{w},x< 0 & \\ 
+ & x,x\geqslant 0 & 
+\end{matrix}\right. $$
+{% endraw%}

@@ -1,7 +1,8 @@
-title: csapp作业练习
+title: csapp作业练习第二章
 author: gslg
-date: 2019-02-22 10:05:37
-tags:
+tags: []
+categories: []
+date: 2019-02-22 10:05:00
 ---
 #### 2.5 大小端问题:  
 
@@ -304,3 +305,63 @@ $$T2U_{w}(x)= \left\{\begin{matrix}
  & x,x\geqslant 0 & 
 \end{matrix}\right. $$
 {% endraw%}
+#### 2.20 T2U公式的运用
+{% raw %}
+<p>$x=-8,T2U_{4}(-8)=-8+2^{4}=-8+16=8$</p>
+<p>$x=-3,T2U_{4}(-3)=-3+2^{4}=-3+16=13$</p>
+<p>$x=-2,T2U_{4}(-2)=-2+2^{4}=-2+16=14$</p>
+<p>$x=-1,T2U_{4}(-1)=-1+2^{4}=-1+16=15$</p>
+<p>$x=0 \geqslant 0,T2U_{4}(0)=0$</p>
+<p>$x=5 \geqslant 0,T2U_{4}(5)=5$</p>
+{% endraw %}
+#### 2.21 无符号数和有符号数的类型转换和关系运算
+{% raw %}
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-s6z2{text-align:center}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-s6z2">表达式</th>
+    <th class="tg-s6z2">类型</th>
+    <th class="tg-baqh">求值</th>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2147483647-1 == 2147483648U</td>
+    <td class="tg-s6z2">无符号数</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2147483647-1 &lt;&nbsp;&nbsp;2147483647</td>
+    <td class="tg-s6z2">有符号数</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2147483647-1U &lt; 2147483647</td>
+    <td class="tg-s6z2">无符号数</td>
+    <td class="tg-baqh">0</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2147483647-1 &lt; -2147483647</td>
+    <td class="tg-s6z2">有符号数</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2147483647-1U &lt; -2147483647</td>
+    <td class="tg-s6z2">无符号数</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+</table>
+<small>注:C语言运算中,如果一个运算数是无符号，另一个是有符号数，那么会隐式的将有符号数转为无符号数再进行运算，另外，$-2147483647-1=TMin_{32};2147483648=2^{31}$</small>  
+<br><br/>
+<p>①-2147483647-1 == 2147483648U: 因为2147483648U是无符号数,所以会将-2147483647-1转为无符号数:$T2U_{32}(-2147483647-1)=T2U_{32}(TMin_{32})=TMax_{32}+1=2^{31}-1+1=2^{31}$,所以二者相等.</p>
+<p>②$-2147483647-1 &lt; 2147483647$:两个都是有符号数，正常比较</p>
+<p>③$-2147483647-1U &lt; 2147483647$:在-2147483647-1U中,1U是无符号数，故-2147483647会转为无符号数,$T2U_{32}(-2147483647)=-2147483647+2^{32}=-2^{31}+1+2^{32}=2^{31}+1$,所以$-2147483647-1U=2^{31}+1-1=2^{31}$,其次$T2U(2147483647)=2^{31}-1$,因此这里运算结果为0</p>
+<p>④-2147483647-1 &lt; -2147483647:两个都是有符号数,正常比较</p>
+<p>⑤-2147483647-1U &lt; -2147483647: 根据③可知左边转为无符号数为$2^{31}$，右边$T2U(-2147483647)=-2^{31}+1+2^{32}=2^{31}+1$,所以小于成立 </p>
+
+
+{% endraw %}

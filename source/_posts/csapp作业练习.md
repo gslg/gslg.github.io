@@ -1,3 +1,4 @@
+---
 title: csapp作业练习第二章
 author: gslg
 tags: []
@@ -42,7 +43,7 @@ int main(){
    show_pointer(pval);
 }
 ```
-
+<!--more-->
 ```c
 int val = 0x87654321;
 byte_pointer valp = (byte_pointer)&val;

@@ -1,3 +1,4 @@
+---
 title: Centos7 VirtualBox桥接网络设置
 author: gslg
 tags:
@@ -13,6 +14,7 @@ date: 2019-07-08 14:51:00
 - 桥接模式
 
 为了让我们的虚拟机以类似独立的方式访问网络,我们需要配置为桥接模式。
+<!--more-->
 ，这里我是用的是VirtualBox安装的虚拟机,因此通过它来配置:
 - 在设置中将NAT网络改为桥接:
  ![images](bridged-virtualbox.png)

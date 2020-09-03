@@ -1,3 +1,4 @@
+---
 title: ExecutorService
 author: gslg
 date: 2019-03-15 17:43:09
@@ -41,7 +42,8 @@ public interface ExecutorService extends Executor {
         throws InterruptedException, ExecutionException, TimeoutException;
 }
 ```
-`ExecutorService`用于管理中止任务或者跟踪异步任务处理。  
+`ExecutorService`用于管理中止任务或者跟踪异步任务处理。
+<!--more-->  
 要使用`ExecutorService`,首先需要定义一个任务:  
 ```java
 public class Task implements Runnable {

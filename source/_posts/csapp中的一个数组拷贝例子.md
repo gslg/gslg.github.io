@@ -1,3 +1,4 @@
+---
 title: csapp中的一个数组拷贝例子
 author: gslg
 tags:
@@ -30,6 +31,7 @@ public static  void  copyji(int[][] a,int[][] b){
         }
     }
 ```
+<!--more-->
 ###### 简单测试
 ```java
 public static void main(String[] args) {

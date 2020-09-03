@@ -1,3 +1,4 @@
+---
 title: Linux RPM包及yum源制作
 author: gslg
 tags:
@@ -23,7 +24,7 @@ RPM允许将原始的软件源码打包成源码包或者二进制包提供给�
 可以添加你的RPM包到yum仓库，这样用户就可以很容易的找到并部署你的软件
 - **对你的软件包进行数字签名**  
 使用GPG签名密钥，你可以对包进行数字签名，以便用户能够验证包的真实性。
-
+<!--more-->
 ## RPM包
 这里主要描述RPM制作的环境准备，以及一些基础概念，[**高级主题**](https://rpm-packaging-guide.github.io/#advanced-topics)在这里可以找到.
 ### 环境准备

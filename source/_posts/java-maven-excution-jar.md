@@ -1,9 +1,11 @@
+---
 title: java使用maven打包为可执行的jar包
 author: gslg
 date: 2019-07-08 16:30:22
 tags:
 ---
 一般使用`maven-assembly-plugin`插件即可
+<!--more-->
 {% codeblock pom.xml %}
     ....
     <build>

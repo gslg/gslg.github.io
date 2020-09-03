@@ -1,3 +1,4 @@
+---
 title: SpringBoot redis-cache
 author: gslg
 tags:
@@ -11,7 +12,7 @@ date: 2019-02-25 15:52:00
 ---
 #### redis统一配置
 在实际项目中,使用缓存时一般要考虑统一管理key的前缀，超时时间等.在使用spring-boot时，我们可以如下配置redis：
-
+<!--more-->
 ```java
 @Configuration
 @EnableCaching

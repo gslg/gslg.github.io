@@ -1,3 +1,4 @@
+---
 title: java.util.concurrent.Executor
 author: gslg
 tags:
@@ -43,6 +44,7 @@ public interface Executor {
             }
         }).start();
 ```
+<!--more-->
 简单来说就是`new Thread(new RunnableTask()).start()`这种模板方式。  
 使用`Executor`来创建任务，我们可以用下面的方式:
 ```java

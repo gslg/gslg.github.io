@@ -8,10 +8,11 @@ categories:
   - java并发
 date: 2019-03-15 10:53:00
 ---
-## java并发包Executor学习
 
+## java 并发包 Executor 学习
 
 #### 源码
+
 ```java
 /* .....
  * @since 1.5
@@ -32,10 +33,12 @@ public interface Executor {
     void execute(Runnable command);
 }
 ```
+
 `Executor`是一个接口，表示一系列可以用来执行已提交任务(`Runnable Tasks`)的对象.  
 它的源码很简单，就只有一个`void execute(Runnable command);`接口方法.  
 `Executor`接口提供了一种将任务提交(`submit`)与任务如何运行的机制解耦的方式，包括线程使用，调度等细节。  
 `Executor`通常用来代替传统的显示的创建线程，例如，之前我们需要在一个新线程中执行任务,我们一般这样写:
+
 ```java
         new Thread(new Runnable() {
             @Override
@@ -44,17 +47,22 @@ public interface Executor {
             }
         }).start();
 ```
+
 <!--more-->
+
 简单来说就是`new Thread(new RunnableTask()).start()`这种模板方式。  
 使用`Executor`来创建任务，我们可以用下面的方式:
+
 ```java
 Executor executor = anExecutor //一个Executor的具体实现
 executor.execute(new RunnableTask1());
 executor.execute(new RunnableTask2());
 ```
+
 可以看到，使用`Executor`屏蔽掉了显示的创建线程`new Thread(...)`  
 但是，`Executor`接口并没有严格要求执行必须是异步的，也就是说任务的执行可以由当前调用线程执行或者新创建线程执行。  
 例如，我们如果要在当前线程执行任务，我们可以定义以下`Executor`实现:
+
 ```java
 class DirectExecutor implements Executor{
   public void execute(Runnable r){
@@ -62,12 +70,16 @@ class DirectExecutor implements Executor{
   }
 }
 ```
+
 这样，我们就可以直接在当前线程执行任务:
+
 ```java
 Executor executor = new DirectExecutor();
 executor.execute(()->System.out.println("当前线程执行"));
 ```
+
 但是，更一般的情况是我们会在一个新线程中去执行任务，例如:
+
 ```java
 class ThreadPerTaskExecutor implements Executor{
    public void execute(Runnable r){
@@ -75,8 +87,10 @@ class ThreadPerTaskExecutor implements Executor{
    }
 }
 ```
+
 这样，我们就为每一个任务都新建线程去执行。  
-许多`Executor`实现对任务如何以及何时调度施加了一些限制。例如在下面的`SerialExecutor`中，我们把队列中的任务按序丢给另外一个executor去执行，相当于是一个组合的执行器.
+许多`Executor`实现对任务如何以及何时调度施加了一些限制。例如在下面的`SerialExecutor`中，我们把队列中的任务按序丢给另外一个 executor 去执行，相当于是一个组合的执行器.
+
 ```java
 public class SerialExecutor implements Executor {
 
@@ -121,6 +135,7 @@ public class SerialExecutor implements Executor {
 ```
 
 我们可以简单测试一下:
+
 ```java
 public class SerialExecutorTest {
     public static void main(String[] args) {
@@ -159,25 +174,29 @@ public class SerialExecutorTest {
     }
 }
 ```
+
 可以在控制台看到，任务按预期的调度执行了:
->任务[0]执行完毕,耗时:1秒  
->任务[1]执行完毕,耗时:2秒  
->任务[2]执行完毕,耗时:3秒  
->任务[3]执行完毕,耗时:4秒  
->任务[4]执行完毕,耗时:5秒  
-任务[5]执行完毕,耗时:6秒  
-任务[6]执行完毕,耗时:7秒  
-任务[7]执行完毕,耗时:8秒  
-任务[8]执行完毕,耗时:9秒  
-任务[9]执行完毕,耗时:10秒  
+
+> 任务[0]执行完毕,耗时:1 秒  
+> 任务[1]执行完毕,耗时:2 秒  
+> 任务[2]执行完毕,耗时:3 秒  
+> 任务[3]执行完毕,耗时:4 秒  
+> 任务[4]执行完毕,耗时:5 秒  
+> 任务[5]执行完毕,耗时:6 秒  
+> 任务[6]执行完毕,耗时:7 秒  
+> 任务[7]执行完毕,耗时:8 秒  
+> 任务[8]执行完毕,耗时:9 秒  
+> 任务[9]执行完毕,耗时:10 秒
 
 #### 内存一致性影响
-在javadoc中关于`Executor`的内存一致性说明:
+
+在 javadoc 中关于`Executor`的内存一致性说明:
 {% blockquote https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html %}
 Memory consistency effects: Actions in a thread prior to submitting a Runnable object to an Executor happen-before its execution begins, perhaps in another thread.
 {% endblockquote %}
 
 理解这句话有点难，举个例子来说:
+
 ```java
 public class MemoryTest {
 
@@ -219,9 +238,10 @@ public class MemoryTest {
     }
 }
 ```
-在上面这个例子中，task1提交了另一个任务task2，在task1提交task2之前执行的任何动作对task2的执行都满足于happen-before关系，因此在task2执行时person的age值是20.  
+
+在上面这个例子中，task1 提交了另一个任务 task2，在 task1 提交 task2 之前执行的任何动作对 task2 的执行都满足于 happen-before 关系，因此在 task2 执行时 person 的 age 值是 20.  
 稍微改造下:  
-```java
+{% codeblock lang:java %}
 public class MemoryTest2 {
 
     static class Person {
@@ -266,14 +286,11 @@ public class MemoryTest2 {
         executor.execute(task1); //①
         executor.execute(task2); //②
     }
+
 }
-```
-在这个例子中，task1和task2是独立提交执行的(①-②)，因此不存在happen-before关系，因此在task2中获取age可能是0或者20，这取决于task1中setAge和task2中getAge谁先执行.
+{% endcodeblock %}
+在这个例子中，task1 和 task2 是独立提交执行的(①-②)，因此不存在 happen-before 关系，因此在 task2 中获取 age 可能是 0 或者 20，这取决于 task1 中 setAge 和 task2 中 getAge 谁先执行.
 
 #### 总结
+
 在`java.util.concurrent`包中，提供了`Executor`的实现`ExecutorService`,这是一个更广泛的接口。`ThreadPoolExecutor`提供了一个可扩展的线程池实现。`Executors`为这些类提供了方便的工厂方法。
-
-
-
-
-

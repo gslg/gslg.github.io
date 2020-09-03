@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"gslg.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述RPM是Red Hat Enterprise Linux, CentOS, and Fedora等linux的包管理器，使用RPM可以很容易的发布，管理，更新这些系统上的软件. 使用RPM可以做如下事情:     安装，重装，卸载，验证软件包用户可以使用标准的包管理工具(Yum 或者 PackageKit)来安装，重装，卸载或者验证软件包 使用已安装包的数据库来查询或者验证RPM维护了一个数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux RPM包及yum源制作">
+<meta property="og:url" content="https://gslg.github.io/linux/inux-RPM%E5%8C%85%E5%8F%8Ayum%E6%BA%90%E5%88%B6%E4%BD%9C/index.html">
+<meta property="og:site_name" content="Hello MyWord!">
+<meta property="og:description" content="概述RPM是Red Hat Enterprise Linux, CentOS, and Fedora等linux的包管理器，使用RPM可以很容易的发布，管理，更新这些系统上的软件. 使用RPM可以做如下事情:     安装，重装，卸载，验证软件包用户可以使用标准的包管理工具(Yum 或者 PackageKit)来安装，重装，卸载或者验证软件包 使用已安装包的数据库来查询或者验证RPM维护了一个数据">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-06-26T01:35:00.000Z">
+<meta property="article:modified_time" content="2020-09-03T12:17:28.607Z">
+<meta property="article:author" content="gslg">
+<meta property="article:tag" content="rpm">
+<meta property="article:tag" content="yum">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://gslg.github.io/linux/inux-RPM%E5%8C%85%E5%8F%8Ayum%E6%BA%90%E5%88%B6%E4%BD%9C/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Linux RPM包及yum源制作 | Hello MyWord!</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hello MyWord!</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://gslg.github.io/linux/inux-RPM%E5%8C%85%E5%8F%8Ayum%E6%BA%90%E5%88%B6%E4%BD%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="gslg">
+      <meta itemprop="description" content="java笔记整理">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hello MyWord!">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux RPM包及yum源制作
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-06-26 09:35:00" itemprop="dateCreated datePublished" datetime="2019-06-26T09:35:00+08:00">2019-06-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-03 20:17:28" itemprop="dateModified" datetime="2020-09-03T20:17:28+08:00">2020-09-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>RPM是Red Hat Enterprise Linux, CentOS, and Fedora等linux的包管理器，使用RPM可以很容易的发布，管理，更新这些系统上的软件.</p>
+<p>使用RPM可以做如下事情:   </p>
+<ul>
+<li><strong>安装，重装，卸载，验证软件包</strong><br>用户可以使用标准的包管理工具(Yum 或者 PackageKit)来安装，重装，卸载或者验证软件包</li>
+<li><strong>使用已安装包的数据库来查询或者验证</strong><br>RPM维护了一个数据库来存储已安装的包和它们的文件,用户可以很容易查询和验证自己系统上安装的软件包</li>
+<li><strong>使用元数据来描述软件包，以及安装手册等</strong><br>每个RPM包都包含一个元数据用来描述该包的组件，版本，发布，大小，工程的URL，安装介绍等信息</li>
+<li><strong>将原始的软件源打包成源代码包和二进制包</strong><br>RPM允许将原始的软件源码打包成源码包或者二进制包提供给你的用户.在源代码包中，你有原始的源代码以及使用的任何补丁，以及完整的构建说明.随着软件新版本发布，这种设计简化了软件包的维护。</li>
+<li><strong>添加包到yum仓库</strong><br>可以添加你的RPM包到yum仓库，这样用户就可以很容易的找到并部署你的软件</li>
+<li><strong>对你的软件包进行数字签名</strong><br>使用GPG签名密钥，你可以对包进行数字签名，以便用户能够验证包的真实性。<a id="more"></a>
+<h2 id="RPM包"><a href="#RPM包" class="headerlink" title="RPM包"></a>RPM包</h2>这里主要描述RPM制作的环境准备，以及一些基础概念，<a target="_blank" rel="noopener" href="https://rpm-packaging-guide.github.io/#advanced-topics"><strong>高级主题</strong></a>在这里可以找到.<h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3>为了制作我们的RPM包，我们需要在自己的linux机器上安装相关工具和环境,这里以Centos7为例.  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> yum install gcc rpm-build rpm-devel rpmlint make python bash coreutils diffutils patch rpmdevtools</span></span><br></pre></td></tr></table></figure>
+如果是Fedora<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> dnf install gcc rpm-build rpm-devel rpmlint make python bash coreutils diffutils patch rpmdevtools</span></span><br></pre></td></tr></table></figure>
+<h3 id="什么是RPM包"><a href="#什么是RPM包" class="headerlink" title="什么是RPM包"></a>什么是RPM包</h3>RPM package就是一个简单的文件，该文件包含了系统所需要的一些其他文件以及对这些文件的信息。具体来说，一个RPM包由包含文件的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Cpio">CPIO归档文件</a>和包含该包元数据的RPM头组成。rpm包管理就是通过该元数据来决定包的依赖,安装路径以及其他信息.  </li>
+</ul>
+<p>有两类的RPM包:  </p>
+<ul>
+<li>RPM源码包(source RPM),即<code>SRPM</code></li>
+<li>二进制RPM包(binary RPM)  </li>
+</ul>
+<p>源码rpm包和二进制RPM包共享文件格式和工具，但是具有不同的内容和作用.<code>SRPM</code>包含了源码，可选的补丁以及<code>SPEC</code>文件，<code>SPEC</code>文件描述了如何将该<code>SRPM</code>构建为<code>binary RPM</code>.<br><code>binary RPM</code>包含了从源码以及补丁构建的二进制文件</p>
+<h3 id="RPM打包工具"><a href="#RPM打包工具" class="headerlink" title="RPM打包工具"></a>RPM打包工具</h3><p>在上面环境准备过程中,已经安装了RPM打包过程中可能用到的工具，可以通过下面的命令来获取工具列表:  </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> rpm -ql rpmdevtools | grep bin</span></span><br></pre></td></tr></table></figure>
+<h3 id="RPM工作空间"><a href="#RPM工作空间" class="headerlink" title="RPM工作空间"></a>RPM工作空间</h3><p>类似于我们开发程序，有个工作空间来存放我们的源码，编译文件等，制作RPM也需要工作空间。首次使用时，我们可以使用<code>rpmdev-setuptree</code>来初始化工作空间:  </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> rpmdev-setuptree</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> tree ~/rpmbuild/</span></span><br><span class="line">/home/rpmuser/rpmbuild/</span><br><span class="line">|-- BUILD</span><br><span class="line">|-- RPMS</span><br><span class="line">|-- SOURCES</span><br><span class="line">|-- SPECS</span><br><span class="line">`-- SRPMS</span><br></pre></td></tr></table></figure>
+<p>可以看到<code>rpmdev-setuptree</code>帮我们在当前用户的目录下生成了rpm的工作空间,这些目录的作用如下:  </p>
+<table>
+<thead>
+<tr>
+<th align="center">目录</th>
+<th align="left">作用</th>
+<th>补充</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">BUILD</td>
+<td align="left">当构建包时，在此创建各种%buildRoot目录。如果日志输出没有提供足够的信息,该目录对排错也很有用.</td>
+<td>我们对源码压缩包进行构建rpm时,解压后的文件就是放在这个目录的</td>
+</tr>
+<tr>
+<td align="center">RPMS</td>
+<td align="left">我们制作的Binary RPM就存放在这里,在这个目录中会根据系统架构创建不同的子目录,比如<code>x86_64</code>和<code>noarch</code>,我们的RPM包就放在对应的子目录下</td>
+<td>生成<code>x86_64</code>或者<code>noarch</code>类型的rpm可以通过<code>SPEC</code>文件指定</td>
+</tr>
+<tr>
+<td align="center">SOURCES</td>
+<td align="left">这里是打包用户放置源码压缩包或补丁的目录，<code>rpmbuild</code>命令就是在这里找源码包的</td>
+<td>一般我们会将源码包压缩为<code>.tar.gz</code>格式，然后放在这个目录进行RPM构建</td>
+</tr>
+<tr>
+<td align="center">SPECS</td>
+<td align="left">放置SPEC文件</td>
+<td>每制作一个应用的rpm包,就需要对应一个SPEC文件，该文件就是放在这个目录</td>
+</tr>
+<tr>
+<td align="center">SRPMS</td>
+<td align="left">当使用<code>rpmbuild</code>构建RPM源码包时，构建的SRPM就是放在这的</td>
+<td>构建源码包的目的就是和当前系统架构解耦</td>
+</tr>
+</tbody></table>
+<h3 id="什么是SPEC文件"><a href="#什么是SPEC文件" class="headerlink" title="什么是SPEC文件"></a>什么是SPEC文件</h3><p><code>SPEC</code>文件可以看做是一个”菜谱”,<code>rpmbuild</code>工具使用该”菜谱”来实际构建RPM.它通过在一系列<code>section</code>中定义指令来告诉构建系统要做什么.<code>sections</code>在前言(<code>Preamble</code>)和正文(<code>Body</code>)中定义。前言包含正文中使用的一系列元数据项，正文包含指令的主要部分。</p>
+<h4 id="前言指令条目"><a href="#前言指令条目" class="headerlink" title="前言指令条目"></a>前言指令条目</h4><p>下表列出了前言中可能包含的一些指令条目:  </p>
+<table>
+<thead>
+<tr>
+<th align="left">SPEC 指令</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>Name</code></td>
+<td align="left">包的基本名字,应该和SPEC文件名保持一致</td>
+</tr>
+<tr>
+<td align="left"><code>Version</code></td>
+<td align="left">软件的上游版本号</td>
+</tr>
+<tr>
+<td align="left"><code>Release</code></td>
+<td align="left">此版本软件发布的次数,初始值设置为 1%{?dist},并且在新发布时增加它. 当该软件新的 <code>Version</code>构建时将该值重置为1.</td>
+</tr>
+<tr>
+<td align="left"><code>Summary</code></td>
+<td align="left">一行简明扼要的概述</td>
+</tr>
+<tr>
+<td align="left"><code>License</code></td>
+<td align="left">正在打包的软件的许可证。对于在社区发行版（如Fedora）中分发的软件包，这必须是一个符合特定发行版许可指南的开源许可证。</td>
+</tr>
+<tr>
+<td align="left"><code>URL</code></td>
+<td align="left">有关程序的详细信息的完整URL。大多数情况下，这是正在打包的软件的上游项目网站。</td>
+</tr>
+<tr>
+<td align="left"><code>Source0</code></td>
+<td align="left">上游源代码压缩存档的路径或url(不含补丁)。这应该指向存档的可访问和可靠存储，例如，上游页面，而不是打包程序的本地存储。如果需要，可以添加更多的sourcex指令，每次增加数字，例如：source1、source2、source3等等。</td>
+</tr>
+<tr>
+<td align="left"><code>Patch0</code></td>
+<td align="left">源码的补丁，如果需要，可以添加更多，例如:Patch1, Patch2,Patch3等等</td>
+</tr>
+<tr>
+<td align="left"><code>BuildArch</code></td>
+<td align="left">如果RPM包不依赖于架构,例如,如果整个使用解释型语言开发,可以设置为<code>BuildArch: noarch</code>.如果不设置，那么就会检测该系统的架构，例如<code>x86_64</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>BuildRequires</code></td>
+<td align="left">逗号或者空格分隔的软件包，主要用来编译由编译型语言编写的程序. 可以有多个<code>BuildRequires</code>节点,每一行列出一个.</td>
+</tr>
+<tr>
+<td align="left"><code>Requires</code></td>
+<td align="left">该软件包安装后运行时依赖的软件包，以逗号和空格分隔. 和<code>BuildRequires</code>一样，也可以有多个节点，每一行一个.</td>
+</tr>
+<tr>
+<td align="left"><code>ExcludeArch</code></td>
+<td align="left">如果该软件不能在特定的处理器体系结构上运行，可以在这里排除该体系结构.</td>
+</tr>
+</tbody></table>
+<p><code>SPEC</code>文件中的<code>Name</code>,<code>Version</code>,<code>Release</code>指令构成了该RPM包的文件名，RPM包的维护人员或者系统管理者通常把这三个指令叫做<strong>N-V-R</strong>或者<strong>NVR</strong>,因为RPM包的名字就是<strong>NAME-VERSION-RELEASE</strong>这样的格式.  </p>
+<p>例如我们查看Python的RPM包,就可以发现这种命名格式</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> rpm -q python</span></span><br><span class="line">python-2.7.5-77.el7_6.x86_64</span><br></pre></td></tr></table></figure>
+<p>这里，<code>python</code>对应于rpm包的<code>Name</code>,<code>2.7.5</code>对应于<code>Version</code>,<code>34.el7_6</code>对应于<code>Release</code>,最后一个标记是x86_64，它表示体系结构.与NVR不同的是，体系结构不是由打包者直接控制的,而是由<code>rpmbuild</code>构建环境定义的.除了与架构无关的<code>noarch</code> rpm包是个例外.</p>
+<h4 id="正文指令条目"><a href="#正文指令条目" class="headerlink" title="正文指令条目"></a>正文指令条目</h4><p>下表是<code>SPEC</code>文件正文部分的指令条目  </p>
+<table>
+<thead>
+<tr>
+<th align="left">SPEC 指令</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>%description</code></td>
+<td align="left">该RPM打包软件的完整描述。此描述可以跨多行，可以分为多个段落。</td>
+</tr>
+<tr>
+<td align="left"><code>%prep</code></td>
+<td align="left">用于准备要构建的软件的命令或一系列命令，例如，在source0中解包归档文件。此指令可以包含shell脚本。</td>
+</tr>
+<tr>
+<td align="left"><code>%build</code></td>
+<td align="left">一条或多条命令,用来将软件编译为机器码(某些编译型语言)或者字节码(某些解释型语言)</td>
+</tr>
+<tr>
+<td align="left"><code>%install</code></td>
+<td align="left">一条或多条命令，用于将所需的生成项目从%builddir（构建发生的位置）复制到%buildroot目录（包含要打包文件的目录结构）。实际上就是拷贝<code>~/rpmbuild/BUILD</code>中的文件到<code>~/rpmbuild/BUILDROOT</code>中，并在<code>~/rpmbuild/BUILDROOT</code>中创建必要的目录.这些动作只会发生在构建包的时候，在终端用户使用rpm包时并不会发生.详细参考 <a target="_blank" rel="noopener" href="https://rpm-packaging-guide.github.io/#working-with-spec-files">working-with-spec-files</a></td>
+</tr>
+<tr>
+<td align="left"><code>%check</code></td>
+<td align="left">一条或多条用于测试该软件的命令,例如包含几个单元测试</td>
+</tr>
+<tr>
+<td align="left"><code>%files</code></td>
+<td align="left">需要安装到客户系统的文件列表</td>
+</tr>
+<tr>
+<td align="left"><code>%changelog</code></td>
+<td align="left">在不同<code>Version</code>和<code>Release</code>之间发生变化的记录</td>
+</tr>
+</tbody></table>
+<h4 id="高级指令条目"><a href="#高级指令条目" class="headerlink" title="高级指令条目"></a>高级指令条目</h4><p>除了上述一些基本的指令外，<code>SPEC</code>文件也可以包含一些高级的指令,例如一些脚本或者触发器，它们可以在终端用户安装过程中的不同阶段进行执行,(不是在rpm构建过程中执行).<br>查看<a target="_blank" rel="noopener" href="https://rpm-packaging-guide.github.io/#triggers-and-scriptlets">triggers-and-scriptlets</a>获取高级主题</p>
+<h3 id="BuildRoots"><a href="#BuildRoots" class="headerlink" title="BuildRoots"></a>BuildRoots</h3><p>在rpm打包的上下文中,”buildroot”是一个<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Chroot">Chroot</a>环境.这意味着构建工件将使用与最终用户系统中相同的文件系统层次结构放置在这里，其中“buildroot”充当根目录,构建工件的放置应该符合最终用户系统的文件系统层次结构标准。  </p>
+<p>“buildroot”文件后面会被放进<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Cpio">cpio归档文件</a>,作为RPM的一个重要组成部分.当在最终用户的系统上安装该RPM包时，这些文件将被提取到根目录中，从而保持正确的层次结构。</p>
+<blockquote>
+<p>!Note: 可以在SPEC文件中使用%{buildroot}来引用该根目录<br>关于Chroot也可以看看<a target="_blank" rel="noopener" href="https://www.imooc.com/article/26318">Linux Chroot</a>  </p>
+</blockquote>
+<h3 id="RPM-Macros"><a href="#RPM-Macros" class="headerlink" title="RPM Macros"></a>RPM Macros</h3><p><a target="_blank" rel="noopener" href="http://rpm.org/user_doc/macros.html">RPM Macros</a>就是一个纯文本替换,这样可以在重复使用某个值时直接引用它，然后让rpm替你替换它.</p>
+<p>例如，在我们写SPEC文件的过程中，我们可能在多个地方引用<code>Version</code>这个值，我们可以定义<code>Version</code>在<code>%&#123;version&#125;</code>宏中,这样就可以在后续使用<code>%&#123;version&#125;</code>来引用该值</p>
+<p>我们可以通过<code>rpm --eval %&#123;_MACRO&#125;</code>来计算已定义的宏,例如:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> rpm --<span class="built_in">eval</span> %&#123;_bindir&#125;</span></span><br><span class="line">/usr/bin</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> rpm --<span class="built_in">eval</span> %&#123;_libexecdir&#125;</span></span><br><span class="line">/usr/libexec</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> On a RHEL 7.x machine</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> rpm --<span class="built_in">eval</span> %&#123;?dist&#125;</span></span><br><span class="line">.el7</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> On a Fedora 23 machine</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> rpm --<span class="built_in">eval</span> %&#123;?dist&#125;</span></span><br><span class="line">.fc23</span><br></pre></td></tr></table></figure>
+
+<p>已经预定义了很多宏,详情查看<a target="_blank" rel="noopener" href="https://rpm-packaging-guide.github.io/#more-on-macros">more-on-macros</a></p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>到这里，我们基本熟悉了RPM的基础概念以及准备工作，下面我们就开始使用SPEC文件来构建我们的RPM包</p>
+<h4 id="源码包准备"><a href="#源码包准备" class="headerlink" title="源码包准备"></a>源码包准备</h4><h5 id="bash脚本"><a href="#bash脚本" class="headerlink" title="bash脚本"></a>bash脚本</h5><ul>
+<li>在我们的工作空间创建<code>bello.sh</code><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">printf &quot;Hello World\n&quot;</span><br></pre></td></tr></table></figure></li>
+<li>我们把<code>bello.sh</code>变为可执行的<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> chmod +x bello.sh</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ./bello</span></span><br><span class="line">Hello World</span><br></pre></td></tr></table></figure></li>
+<li>我们再随便建一个LICENSE文件:<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"><span class="built_in">echo</span> GPLv3+ &gt; LICENSE</span></span><br><span class="line"><span class="meta">$</span><span class="bash">tree</span></span><br><span class="line">  |─ bello</span><br><span class="line">    |─ bello.sh</span><br><span class="line">    |─ LICENSE</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li>打包我们的源码,一般压缩包的命名方式为<strong>name-version.tar.gz</strong><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tar -cvzf bello-0.1.tar.gz bello</span></span><br><span class="line">bello/</span><br><span class="line">bello/LICENSE</span><br><span class="line">bello/bello.sh</span><br></pre></td></tr></table></figure></li>
+<li>将源码包拷贝至<code>rpmbuild</code>工作空间的<code>SOURCES</code>子目录下<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mv bello-0.1.tar.gz ~/rpmbuild/SOURCES/</span></span><br></pre></td></tr></table></figure>
+<h5 id="C程序包"><a href="#C程序包" class="headerlink" title="C程序包"></a>C程序包</h5><ol>
+<li>cello<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> $ mkdir cello &amp;&amp; cd cello</span><br><span class="line"> $ vim cello.c</span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">int main()&#123;</span><br><span class="line">  printf(&quot;Hello world.\n&quot;);</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+<p>2.因为C程序需要编译安装，所以再写个<code>Makefile</code>:<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> cello:</span><br><span class="line">        gcc -g -o cello cello.c</span><br><span class="line"></span><br><span class="line">clean:</span><br><span class="line">        rm cello</span><br><span class="line"></span><br><span class="line">install:</span><br><span class="line">        mkdir -p $(DESTDIR)&#x2F;usr&#x2F;bin</span><br><span class="line">        install -m 0755 cello $(DESTDIR)&#x2F;usr&#x2F;bin&#x2F;cello</span><br><span class="line"> </span><br></pre></td></tr></table></figure></p>
+<h5 id="Java-Spring-Boot程序包"><a href="#Java-Spring-Boot程序包" class="headerlink" title="Java Spring Boot程序包"></a>Java Spring Boot程序包</h5><h5 id="前端包"><a href="#前端包" class="headerlink" title="前端包"></a>前端包</h5><p>到这里，我们已经准备好了我们的源码包,下面就开始写<code>SPEC</code>文件  </p>
+<h4 id="Working-with-SPEC-files"><a href="#Working-with-SPEC-files" class="headerlink" title="Working with SPEC files"></a>Working with SPEC files</h4><p>源码包准备好以后，我们开始编写<code>SPEC</code>文件，在前面我们提到,<code>SPEC</code>文件实际是构建RPM包的”菜谱”,为了构建RPM包，我们大部分的工作就是编写<code>SPEC</code>文件  </p>
+<p>每构建一个新的软件包，我们首先需要创建一个对应额SPEC文件，手动写SPEC文件比较麻烦，我们可以使用<code>rpmdev-newspec</code>工具创建一个SPEC文件模板，我们只需要填充必要的部分.</p>
+<h5 id="创建bello-SPEC文件"><a href="#创建bello-SPEC文件" class="headerlink" title="创建bello SPEC文件"></a>创建bello SPEC文件</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> ~/rpmbuild/SPECS</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> rpmdev-newspec bello</span></span><br><span class="line"> bello.spec created; type minimal, rpm version &gt;= 4.11. </span><br></pre></td></tr></table></figure>
+<p>我们可以看一下生成的spec文件内容:<br> <figure class="highlight plain"><figcaption><span>bello.spec</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">Name:           bello  </span><br><span class="line">Version:        </span><br><span class="line">Release:        1%&#123;?dist&#125;  </span><br><span class="line">Summary:        </span><br><span class="line"></span><br><span class="line">License:        </span><br><span class="line">URL:            </span><br><span class="line">Source0:        </span><br><span class="line"></span><br><span class="line">BuildRequires:  </span><br><span class="line">Requires:       </span><br><span class="line"></span><br><span class="line">%description  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%prep  </span><br><span class="line">%setup -q</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%build  </span><br><span class="line">%configure  </span><br><span class="line">make %&#123;?_smp_mflags&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%install  </span><br><span class="line">rm -rf $RPM_BUILD_ROOT  </span><br><span class="line">%make_install</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%files  </span><br><span class="line">%doc  </span><br><span class="line"></span><br><span class="line">%changelog   </span><br><span class="line"> </span><br></pre></td></tr></table></figure></p>
+<h5 id="修改bello-SPEC文件"><a href="#修改bello-SPEC文件" class="headerlink" title="修改bello.SPEC文件"></a>修改bello.SPEC文件</h5><ol>
+<li><p>填充<code>Name</code>, <code>Version</code>, <code>Release</code>, 和 <code>Summary</code>条目</p>
+<ul>
+<li><code>Name</code>已经通过<code>rpmdev-newspec</code>参数指定了</li>
+<li>设置<code>Version</code>,与bello源码的上游版本号相匹配，这里是<code>0.1</code></li>
+<li>这里<code>Release</code>已经被自动设置为初始值<code>1</code>.当需要更新这个包但是上游版本号不变时，例如补丁更新,需要递增该值.当上游一个新版本发布时，例如发布<code>bello-0.2</code>，那么需要将该值重置为<code>1</code>. <code>%&#123;?dist&#125;</code>我们在上面的宏部分已经说过了.  </li>
+<li><code>Summary</code>写一行简明的概述<br>在修改后，bello.spec文件长这样:  <figure class="highlight plain"><figcaption><span>bello.spec</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Name:           bello</span><br><span class="line">Version:        0.1</span><br><span class="line">Release:        1%&#123;?dist&#125;</span><br><span class="line">Summary:        Hello World example implemented in bash script</span><br></pre></td></tr></table></figure>    
+</li>
+</ul>
+</li>
+<li><p>填充<code>License</code>, <code>URL</code>, 和<code>Source0</code> 条目:</p>
+<ul>
+<li><code>License</code>文件格式可以参考<a target="_blank" rel="noopener" href="https://fedoraproject.org/wiki/Licensing:Main">Fedora License Guidelines</a>,这里我们使用<code>GPLv3+</code></li>
+<li><code>URL</code>提供了到软件主页的访问地址.例如<code>https://example.com/bello</code>,一般使用<code> %&#123;name&#125;</code>宏来代替，如<code>https://example.com/%&#123;name&#125;</code></li>
+<li><code>Source0</code>提供了到源码的访问路径.它应该直接指向正在需要打包的软件，例如<code>https://example.com/bello/releases/bello-0.1.tar.gz</code>,使用宏替代则为:<code>https://example.com/%&#123;name&#125;/releases/%&#123;name&#125;-%&#123;version&#125;.tar.gz</code>.<br>在我们修改后，长这样:<figure class="highlight plain"><figcaption><span>bello.spec</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Name:           bello</span><br><span class="line">Version:        0.1</span><br><span class="line">Release:        1%&#123;?dist&#125;</span><br><span class="line">Summary:        Hello World example implemented in bash script</span><br><span class="line"></span><br><span class="line">License:        GPLv3+</span><br><span class="line">URL:            https:&#x2F;&#x2F;example.com&#x2F;%&#123;name&#125;</span><br><span class="line">Source0:        https:&#x2F;&#x2F;example.com&#x2F;%&#123;name&#125;&#x2F;release&#x2F;%&#123;name&#125;-% &#123;version&#125;.tar.gz</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>填充<code>BuildRequires</code>和<code>Requires</code>以及<code>BuildArch</code>条目</p>
+<ul>
+<li><code>BuildRequires</code>指定了软件包构建时期的依赖,对于bello来说，没有构建这一步骤，因为bello是通过解释型语言编写的，只需要将该文件安装到客户本地文件系统上即可.因此这里直接删除该条目即可.</li>
+<li><code>Requires</code>指定了软件运行时期的依赖项，因为我们的bello只依赖于<code>bash</code>执行环境,因此只需要添加<code>bash</code>即可.</li>
+<li>因为bello程序是通过解释型语言编写的，不需要编译，因此需要设置<code>BuildArch</code>为<code>noarch</code>,这样就告诉RPM构建包时不需要去绑定打包机器的处理器架构.<br>编辑完成后，我们的spec文件长这样了:<figure class="highlight plain"><figcaption><span>bello.spec</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Name:           bello</span><br><span class="line">Version:        0.1</span><br><span class="line">Release:        1%&#123;?dist&#125;</span><br><span class="line">Summary:        Hello World example implemented in bash script</span><br><span class="line"></span><br><span class="line">License:        GPLv3+</span><br><span class="line">URL:            https:&#x2F;&#x2F;example.com&#x2F;%&#123;name&#125;</span><br><span class="line">Source0:        https:&#x2F;&#x2F;example.com&#x2F;%&#123;name&#125;&#x2F;release&#x2F;%&#123;name&#125;-%&#123;version&#125;.tar.gz</span><br><span class="line"></span><br><span class="line">Requires:       bash</span><br><span class="line"></span><br><span class="line">BuildArch:      noarch</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>填充<code>%description</code>,<code>%prep</code>, <code>%build</code>, <code>%install</code>, <code>%files</code>,和<code>%changelog</code>条目。这些条目相当于一个章节标题,因为可以有多行，多个指令或者多个脚本任务执行。</p>
+<ul>
+<li><code>%description</code>是一段长的，完整的关于该软件的描述,可以包含一个或多个段落</li>
+<li><code>%prep</code>部分指定了如何去准备构建环境.通常涉及扩展源代码的压缩文档，补丁的应用，以及可能解析源代码中提供的信息，以便在SPEC的后续部分中使用。例子中我们简单使用内置的宏<code>%setup -q</code></li>
+<li><code>%build</code>部分指定了怎样去构建我们的软件. 因为<code>bash</code>不需要构建，因此这里直接删除模板中提供的，留一个空行就行了</li>
+<li><code>%install</code>部分规定了<code>rpmbuild</code>在构建软件后将其安装到<code>BUILDROOT</code>目录下的操作.该目录是一个空的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Chroot">chroot</a>根目录，类似于最终用户的根目录。 在这里，我们应该创建任何包含已安装文件的目录。<br>因为安装<code>bello</code>仅仅需要创建一个目标文件夹，然后把可执行的bash脚本安装在该目录即可，我们会使用<code>install</code>命令来完成该操作.RPM的宏允许我们能够完成这些操作而不需要硬编码我们的安装路径.<br>这样，我们修改后的<code>%install</code>部分:<figure class="highlight plain"><figcaption><span>bello.spec</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> %install</span><br><span class="line"></span><br><span class="line">mkdir -p %&#123;buildroot&#125;&#x2F;%&#123;_bindir&#125;</span><br><span class="line"></span><br><span class="line">install -m 0755 %&#123;name&#125; %&#123;buildroot&#125;&#x2F;%&#123;_bindir&#125;&#x2F;%&#123;name&#125;</span><br><span class="line">  </span><br></pre></td></tr></table></figure></li>
+<li><code>%files</code>部分列出了RPM提供的文件列表,以及安装到终端用户系统中的全路径.因此，<code>bello</code>安装包只提供了一个<code>/usr/bin/bello.sh</code>文件需要安装,使用宏代替则为<code>%&#123;_bindir&#125;/&#123;name&#125;</code><br>在这个部分中，我们可以使用内置的宏指定标识文件的角色,这样的好处在于可以通过rpm命令来检索这些元数据.例如，为了表明<strong>LICENSE</strong>文件是一个软件的<code>license file</code>,我们可以使用宏<code>%license</code>来标明:<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">  %</span><span class="bash">files</span></span><br><span class="line"><span class="meta">%</span><span class="bash">license LICENSE</span></span><br><span class="line"><span class="meta">%</span><span class="bash">&#123;_bindir&#125;/%&#123;name&#125;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><code>%changelog</code>，这是最后一个部分.是包的每个版本发布的加盖时间戳的条目列表，它们记录了包的变化,而不是软件的变化，例如添加补丁，或者更改<code>%build</code>等构建程序.<br>第一行的格式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* Day-of-Week Month Day Year Name Surname &lt;email&gt; - Version-Release</span><br></pre></td></tr></table></figure>
+<p>实际变化的节点格式:</p>
+<ul>
+<li>每一个变化条目可以包含多个项,每一个项对应一个变化.</li>
+<li>每一个项从新的一行开始</li>
+<li>每一个项以<code>-</code>开头  </li>
+</ul>
+<p>例如一个加盖时间戳的变化条目:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> %changelog</span><br><span class="line">* Tue May 31 2016 Adam Miller &lt;maxamillion@fedoraproject.org&gt; - 0.1-1</span><br><span class="line">- First bello package</span><br><span class="line">- Example second item in the changelog for version-release 0.1-1</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>到此,我们终于写好了一个完整的spec文件:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">Name:           bello</span><br><span class="line">Version:        0.1</span><br><span class="line">Release:        1%&#123;?dist&#125;</span><br><span class="line">Summary:        Hello World example implemented in bash script</span><br><span class="line"></span><br><span class="line">License:        GPLv3+</span><br><span class="line">URL:            https:&#x2F;&#x2F;www.example.com&#x2F;%&#123;name&#125;</span><br><span class="line">Source0:        https:&#x2F;&#x2F;www.example.com&#x2F;%&#123;name&#125;&#x2F;releases&#x2F;%&#123;name&#125;-%&#123;version&#125;.tar.gz</span><br><span class="line"></span><br><span class="line">Requires:       bash</span><br><span class="line"></span><br><span class="line">BuildArch:      noarch</span><br><span class="line"></span><br><span class="line">%description</span><br><span class="line">The long-tail description for our Hello World Example implemented in</span><br><span class="line">bash script.</span><br><span class="line"></span><br><span class="line">%prep</span><br><span class="line">%setup -q</span><br><span class="line"></span><br><span class="line">%build</span><br><span class="line"></span><br><span class="line">%install</span><br><span class="line"></span><br><span class="line">mkdir -p %&#123;buildroot&#125;&#x2F;%&#123;_bindir&#125;</span><br><span class="line"></span><br><span class="line">install -m 0755 %&#123;name&#125; %&#123;buildroot&#125;&#x2F;%&#123;_bindir&#125;&#x2F;%&#123;name&#125;</span><br><span class="line"></span><br><span class="line">%files</span><br><span class="line">%license LICENSE</span><br><span class="line">%&#123;_bindir&#125;&#x2F;%&#123;name&#125;</span><br><span class="line"></span><br><span class="line">%changelog</span><br><span class="line">* Thu Jun 27 2019 Adam Miller &lt;maxamillion@fedoraproject.org&gt; - 0.1-1</span><br><span class="line">- First bello package</span><br><span class="line">- Example second item in the changelog for version-release 0.1-1</span><br></pre></td></tr></table></figure>  
+
+<p>注意，我们在例子中<code>Source0</code>条目为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Source0:        https:&#x2F;&#x2F;www.example.com&#x2F;%&#123;name&#125;&#x2F;releases&#x2F;%&#123;name&#125;-%&#123;version&#125;.tar.gz</span><br></pre></td></tr></table></figure>
+<p>这会从我们的发布地址去拉取源码<code>tar.gz</code>包，但是我们实际上已经把bello打好包并放入了<code>rpmbuild/SOURCES</code>文件下了，因此我们需要这样指定即可:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Source0:        %&#123;name&#125;-%&#123;version&#125;.tar.gz</span><br></pre></td></tr></table></figure>
+
+<h5 id="C程序cello-spec"><a href="#C程序cello-spec" class="headerlink" title="C程序cello.spec"></a>C程序cello.spec</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">Name:           cello</span><br><span class="line">Version:        1.0</span><br><span class="line">Release:        1%&#123;?dist&#125;</span><br><span class="line">Summary:        Hello World example implemented in C</span><br><span class="line"></span><br><span class="line">License:        GPLv3+</span><br><span class="line">URL:            https:&#x2F;&#x2F;www.example.com&#x2F;%&#123;name&#125;</span><br><span class="line">Source0:        https:&#x2F;&#x2F;www.example.com&#x2F;%&#123;name&#125;&#x2F;releases&#x2F;%&#123;name&#125;-%&#123;version&#125;.tar.gz</span><br><span class="line"></span><br><span class="line">BuildRequires:  gcc</span><br><span class="line">BuildRequires:  make</span><br><span class="line"></span><br><span class="line">%description</span><br><span class="line">The long-tail description for our Hello World Example implemented in</span><br><span class="line">C.</span><br><span class="line"></span><br><span class="line">%prep</span><br><span class="line">%setup -q</span><br><span class="line"></span><br><span class="line">%build</span><br><span class="line">make %&#123;?_smp_mflags&#125;</span><br><span class="line"></span><br><span class="line">%install</span><br><span class="line">%make_install</span><br><span class="line"></span><br><span class="line">%files</span><br><span class="line">%license LICENSE</span><br><span class="line">%&#123;_bindir&#125;&#x2F;%&#123;name&#125;</span><br><span class="line"></span><br><span class="line">%changelog</span><br><span class="line">* Tue May 31 2016 Adam Miller &lt;maxamillion@fedoraproject.org&gt; - 1.0-1</span><br><span class="line">- First cello package</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h5 id="Java项目jello-spec"><a href="#Java项目jello-spec" class="headerlink" title="Java项目jello.spec"></a>Java项目jello.spec</h5><h5 id="前端静态页面-nginx-hello-spec文件"><a href="#前端静态页面-nginx-hello-spec文件" class="headerlink" title="前端静态页面+nginx hello.spec文件"></a>前端静态页面+nginx hello.spec文件</h5><h4 id="构建RPM包"><a href="#构建RPM包" class="headerlink" title="构建RPM包"></a>构建RPM包</h4><h5 id="源码形式的SRPM构建"><a href="#源码形式的SRPM构建" class="headerlink" title="源码形式的SRPM构建"></a>源码形式的SRPM构建</h5><ul>
+<li>保留部署到环境的RPM的某个名称版本发布的确切来源。 这包括确切的SPEC文件，源代码和所有相关补丁。 这对于回顾历史和调试很有用。</li>
+<li>能够在不同的硬件平台或体系结构上构建二进制RPM。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpmbuild -bs bello.spec</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h5 id="二进制形式的RPM构建"><a href="#二进制形式的RPM构建" class="headerlink" title="二进制形式的RPM构建"></a>二进制形式的RPM构建</h5><h6 id="从SRPM构建"><a href="#从SRPM构建" class="headerlink" title="从SRPM构建"></a>从SRPM构建</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpmbuild --rebuild ~&#x2F;rpmbuild&#x2F;SRPMS&#x2F;bello-0.1-1.el7.src.rpm</span><br></pre></td></tr></table></figure>
+<h6 id="直接从spec文件构建"><a href="#直接从spec文件构建" class="headerlink" title="直接从spec文件构建"></a>直接从spec文件构建</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpmbuild -bb bello.spec</span><br></pre></td></tr></table></figure>
+
+<h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://rpm-packaging-guide.github.io/">RPM Packaging Guide</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.fedoraproject.org/en-US/quick-docs/creating-rpm-packages/index.html">creating-rpm-packages</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/rpm/" rel="tag"># rpm</a>
+              <a href="/tags/yum/" rel="tag"># yum</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/java%E5%B9%B6%E5%8F%91/%E6%AD%BB%E9%94%81%E4%B8%8E%E6%AD%BB%E9%94%81%E6%8E%92%E6%9F%A5/" rel="prev" title="死锁与死锁排查">
+      <i class="fa fa-chevron-left"></i> 死锁与死锁排查
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/redis/RedisPersistence/" rel="next" title="Redis 持久化">
+      Redis 持久化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RPM%E5%8C%85"><span class="nav-number">2.</span> <span class="nav-text">RPM包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">2.1.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFRPM%E5%8C%85"><span class="nav-number">2.2.</span> <span class="nav-text">什么是RPM包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RPM%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7"><span class="nav-number">2.3.</span> <span class="nav-text">RPM打包工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RPM%E5%B7%A5%E4%BD%9C%E7%A9%BA%E9%97%B4"><span class="nav-number">2.4.</span> <span class="nav-text">RPM工作空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFSPEC%E6%96%87%E4%BB%B6"><span class="nav-number">2.5.</span> <span class="nav-text">什么是SPEC文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%89%8D%E8%A8%80%E6%8C%87%E4%BB%A4%E6%9D%A1%E7%9B%AE"><span class="nav-number">2.5.1.</span> <span class="nav-text">前言指令条目</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%A3%E6%96%87%E6%8C%87%E4%BB%A4%E6%9D%A1%E7%9B%AE"><span class="nav-number">2.5.2.</span> <span class="nav-text">正文指令条目</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%AB%98%E7%BA%A7%E6%8C%87%E4%BB%A4%E6%9D%A1%E7%9B%AE"><span class="nav-number">2.5.3.</span> <span class="nav-text">高级指令条目</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BuildRoots"><span class="nav-number">2.6.</span> <span class="nav-text">BuildRoots</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RPM-Macros"><span class="nav-number">2.7.</span> <span class="nav-text">RPM Macros</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E5%8C%85%E5%87%86%E5%A4%87"><span class="nav-number">3.0.1.</span> <span class="nav-text">源码包准备</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#bash%E8%84%9A%E6%9C%AC"><span class="nav-number">3.0.1.1.</span> <span class="nav-text">bash脚本</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#C%E7%A8%8B%E5%BA%8F%E5%8C%85"><span class="nav-number">3.0.1.2.</span> <span class="nav-text">C程序包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Java-Spring-Boot%E7%A8%8B%E5%BA%8F%E5%8C%85"><span class="nav-number">3.0.1.3.</span> <span class="nav-text">Java Spring Boot程序包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%89%8D%E7%AB%AF%E5%8C%85"><span class="nav-number">3.0.1.4.</span> <span class="nav-text">前端包</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Working-with-SPEC-files"><span class="nav-number">3.0.2.</span> <span class="nav-text">Working with SPEC files</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAbello-SPEC%E6%96%87%E4%BB%B6"><span class="nav-number">3.0.2.1.</span> <span class="nav-text">创建bello SPEC文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9bello-SPEC%E6%96%87%E4%BB%B6"><span class="nav-number">3.0.2.2.</span> <span class="nav-text">修改bello.SPEC文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#C%E7%A8%8B%E5%BA%8Fcello-spec"><span class="nav-number">3.0.2.3.</span> <span class="nav-text">C程序cello.spec</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Java%E9%A1%B9%E7%9B%AEjello-spec"><span class="nav-number">3.0.2.4.</span> <span class="nav-text">Java项目jello.spec</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%89%8D%E7%AB%AF%E9%9D%99%E6%80%81%E9%A1%B5%E9%9D%A2-nginx-hello-spec%E6%96%87%E4%BB%B6"><span class="nav-number">3.0.2.5.</span> <span class="nav-text">前端静态页面+nginx hello.spec文件</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9E%84%E5%BB%BARPM%E5%8C%85"><span class="nav-number">3.0.3.</span> <span class="nav-text">构建RPM包</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E5%BD%A2%E5%BC%8F%E7%9A%84SRPM%E6%9E%84%E5%BB%BA"><span class="nav-number">3.0.3.1.</span> <span class="nav-text">源码形式的SRPM构建</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%BD%A2%E5%BC%8F%E7%9A%84RPM%E6%9E%84%E5%BB%BA"><span class="nav-number">3.0.3.2.</span> <span class="nav-text">二进制形式的RPM构建</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E4%BB%8ESRPM%E6%9E%84%E5%BB%BA"><span class="nav-number">3.0.3.2.1.</span> <span class="nav-text">从SRPM构建</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E4%BB%8Espec%E6%96%87%E4%BB%B6%E6%9E%84%E5%BB%BA"><span class="nav-number">3.0.3.2.2.</span> <span class="nav-text">直接从spec文件构建</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E7%94%A8"><span class="nav-number">3.1.</span> <span class="nav-text">引用</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">gslg</p>
+  <div class="site-description" itemprop="description">java笔记整理</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gslg" title="GitHub → https://github.com/gslg" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">gslg</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">56k</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

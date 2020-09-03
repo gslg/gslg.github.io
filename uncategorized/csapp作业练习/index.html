@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"gslg.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="2.5 大小端问题:12345678910111213141516171819202122232425262728293031323334&#x2F;&#x2F;show_bytes.c#include &lt;stdio.h&gt;typedef unsigned char *byte_pointer;void show_bytes(byte_pointer start,size_t len)&amp;#123;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="csapp作业练习第二章">
+<meta property="og:url" content="https://gslg.github.io/uncategorized/csapp%E4%BD%9C%E4%B8%9A%E7%BB%83%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Hello MyWord!">
+<meta property="og:description" content="2.5 大小端问题:12345678910111213141516171819202122232425262728293031323334&#x2F;&#x2F;show_bytes.c#include &lt;stdio.h&gt;typedef unsigned char *byte_pointer;void show_bytes(byte_pointer start,size_t len)&amp;#123;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gslg.github.io/uncategorized/csapp%E4%BD%9C%E4%B8%9A%E7%BB%83%E4%B9%A0/%E4%B8%89%E5%8E%9F%E8%89%B2.png">
+<meta property="article:published_time" content="2019-02-22T02:05:00.000Z">
+<meta property="article:modified_time" content="2020-09-03T12:17:28.606Z">
+<meta property="article:author" content="gslg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gslg.github.io/uncategorized/csapp%E4%BD%9C%E4%B8%9A%E7%BB%83%E4%B9%A0/%E4%B8%89%E5%8E%9F%E8%89%B2.png">
+
+<link rel="canonical" href="https://gslg.github.io/uncategorized/csapp%E4%BD%9C%E4%B8%9A%E7%BB%83%E4%B9%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>csapp作业练习第二章 | Hello MyWord!</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hello MyWord!</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://gslg.github.io/uncategorized/csapp%E4%BD%9C%E4%B8%9A%E7%BB%83%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="gslg">
+      <meta itemprop="description" content="java笔记整理">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hello MyWord!">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          csapp作业练习第二章
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-02-22 10:05:00" itemprop="dateCreated datePublished" datetime="2019-02-22T10:05:00+08:00">2019-02-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-03 20:17:28" itemprop="dateModified" datetime="2020-09-03T20:17:28+08:00">2020-09-03</time>
+              </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.1k</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="2-5-大小端问题"><a href="#2-5-大小端问题" class="headerlink" title="2.5 大小端问题:"></a>2.5 大小端问题:</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//show_bytes.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *byte_pointer;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">show_bytes</span><span class="params">(byte_pointer start,<span class="keyword">size_t</span> len)</span></span>&#123;</span><br><span class="line">     <span class="keyword">size_t</span> i;</span><br><span class="line">     <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;len;i++)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot; %.2x&quot;</span>,start[i]);</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">show_int</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</span><br><span class="line">  show_bytes((byte_pointer)&amp;x,<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">show_float</span><span class="params">(<span class="keyword">float</span> x)</span></span>&#123;</span><br><span class="line">   show_bytes((byte_pointer)&amp;x,<span class="keyword">sizeof</span>(<span class="keyword">float</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">show_pointer</span><span class="params">(<span class="keyword">void</span> *x)</span></span>&#123;</span><br><span class="line">   show_bytes((byte_pointer)&amp;x,<span class="keyword">sizeof</span>(<span class="keyword">void</span> *));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">int</span> val = <span class="number">12345</span>;</span><br><span class="line">   <span class="keyword">int</span> ival = val;</span><br><span class="line">   <span class="keyword">float</span> fval = (<span class="keyword">float</span>)ival;</span><br><span class="line">   <span class="keyword">int</span> *pval = &amp;ival;</span><br><span class="line">   show_int(ival);</span><br><span class="line">   show_float(fval);</span><br><span class="line">   show_pointer(pval);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> val = <span class="number">0x87654321</span>;</span><br><span class="line">byte_pointer valp = (byte_pointer)&amp;val;</span><br><span class="line">show_bytes(valp,<span class="number">1</span>); <span class="comment">/*A.*/</span></span><br><span class="line">show_bytes(valp,<span class="number">2</span>);<span class="comment">/*B.*/</span></span><br><span class="line">show_bytes(valp,<span class="number">3</span>);<span class="comment">/*C.*/</span></span><br></pre></td></tr></table></figure>
+<p>在小端和大端机器上分别调用的结果:  </p>
+<table>
+<thead>
+<tr>
+<th align="left">值</th>
+<th align="left">小端</th>
+<th align="left">大端</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">0x87654321</td>
+<td align="left">21 43 65 87</td>
+<td align="left">87 65 43 21</td>
+</tr>
+<tr>
+<td align="left">A</td>
+<td align="left">21</td>
+<td align="left">87</td>
+</tr>
+<tr>
+<td align="left">B</td>
+<td align="left">21 43</td>
+<td align="left">87 65</td>
+</tr>
+<tr>
+<td align="left">C</td>
+<td align="left">21 43 65</td>
+<td align="left">87 65 43</td>
+</tr>
+</tbody></table>
+<h4 id="2-6-正数与浮点数二进制位比较"><a href="#2-6-正数与浮点数二进制位比较" class="headerlink" title="2.6 正数与浮点数二进制位比较"></a>2.6 正数与浮点数二进制位比较</h4><table>
+<thead>
+<tr>
+<th align="left">值</th>
+<th align="left">十六进制</th>
+<th align="left">二进制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">3510593</td>
+<td align="left">0x00359141</td>
+<td align="left">00000000001<font color=red face=“黑体”>101011001000101000001</font></td>
+</tr>
+<tr>
+<td align="left">3510593.0</td>
+<td align="left">0x4a564504</td>
+<td align="left">&nbsp;&nbsp;&nbsp; 010010100 <font color=red face=“黑体”>101011001000101000001</font>00</td>
+</tr>
+<tr>
+<td align="left">整数中除了第一位的1其它都包含在浮点数的二进制中</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h4 id="2-7"><a href="#2-7" class="headerlink" title="2.7"></a>2.7</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *s=<span class="string">&quot;abcdef&quot;</span>;</span><br><span class="line">show_bytes((byte_pointer)s,<span class="built_in">strlen</span>(s)); <span class="comment">//输出结果</span></span><br></pre></td></tr></table></figure>
+<p><code>注意字母&#39;a&#39;～‘z’的ASCII码为0x61～0x7A.在unix中运行man ascii可以查看ascii表.</code><br>输出为61 62 63 64 65 66 00其中00是字符串终止字节</p>
+<h4 id="2-8-位向量布尔运算及相关定理"><a href="#2-8-位向量布尔运算及相关定理" class="headerlink" title="2.8 位向量布尔运算及相关定理"></a>2.8 位向量布尔运算及相关定理</h4><table>
+<thead>
+<tr>
+<th align="left">运算</th>
+<th align="left">结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">a</td>
+<td align="left">[01101001]</td>
+</tr>
+<tr>
+<td align="left">b</td>
+<td align="left">[01010101]</td>
+</tr>
+<tr>
+<td align="left">~a</td>
+<td align="left">[10010110]</td>
+</tr>
+<tr>
+<td align="left">~b</td>
+<td align="left">[10101010]</td>
+</tr>
+<tr>
+<td align="left">a&amp;b</td>
+<td align="left">[01000001]</td>
+</tr>
+<tr>
+<td align="left">a&#124;b</td>
+<td align="left">[01111101]</td>
+</tr>
+<tr>
+<td align="left">a^b</td>
+<td align="left">[00111100]</td>
+</tr>
+<tr>
+<td align="left">注: 类似于乘法分配律,</td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<ul>
+<li>&amp;对|分配律: <code>a&amp;(b|c)=(a&amp;b)|(a&amp;c);  </code>  </li>
+<li>反过来，|对&amp;也具有分配律: <code>a|(b&amp;c)=(a|b)&amp;(a|c)</code></li>
+<li>对于任何a值,有:<code>a^a=0</code>;即使交换顺序也成立:<code>a^b^a=(a^a)^b=b</code></li>
+</ul>
+<h4 id="2-9-RGB三原色"><a href="#2-9-RGB三原色" class="headerlink" title="2.9 RGB三原色"></a>2.9 RGB三原色</h4><p>基于红(R),绿(G)，蓝(B)三种光源的打开(1)和关闭(0)可以创建以下8种不同颜色:  </p>
+<table>
+<thead>
+<tr>
+<th align="center">R</th>
+<th align="center">G</th>
+<th align="center">B</th>
+<th align="center">颜色</th>
+<th></th>
+<th align="center">R</th>
+<th align="center">G</th>
+<th align="center">B</th>
+<th align="center">颜色</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">黑色</td>
+<td></td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">红色</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">蓝色</td>
+<td></td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">红紫色</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">绿色</td>
+<td></td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">黄色</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">蓝绿色</td>
+<td></td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">白色</td>
+</tr>
+</tbody></table>
+<p>A.每种颜色的互补关系:<br><img src="%E4%B8%89%E5%8E%9F%E8%89%B2.png" alt="image"><br>B.对颜色进行布尔运算: </p>
+<ul>
+<li>蓝色|绿色 = 001|010 = 011= 蓝绿色</li>
+<li>黄色&amp;蓝绿色 = 110&amp;011 = 010 = 绿色</li>
+<li>红色^红紫色 = 100^101 = 001 = 蓝色</li>
+</ul>
+<h4 id="2-10-不使用临时变量的交换值"><a href="#2-10-不使用临时变量的交换值" class="headerlink" title="2.10 不使用临时变量的交换值"></a>2.10 不使用临时变量的交换值</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">inplace_swap</span><span class="params">(<span class="keyword">int</span> *x,<span class="keyword">int</span> *y)</span></span>&#123;</span><br><span class="line">  *y = *x ^ *y; <span class="comment">/* Step 1*/</span></span><br><span class="line">  *x = *x ^ *y; <span class="comment">/* Step 2*/</span></span><br><span class="line">  *y = *x ^ *y; <span class="comment">/* Step 3*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据定理a^a=0,得到每一步骤的结果:  </p>
+<table>
+<thead>
+<tr>
+<th align="center">步骤</th>
+<th align="center">*x</th>
+<th align="center">*y</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">初始</td>
+<td align="center">a</td>
+<td align="center">b</td>
+</tr>
+<tr>
+<td align="center">第1步</td>
+<td align="center">a</td>
+<td align="center">a^b</td>
+</tr>
+<tr>
+<td align="center">第2步</td>
+<td align="center">a^(a^b)=b</td>
+<td align="center">a^b</td>
+</tr>
+<tr>
+<td align="center">第3步</td>
+<td align="center">b</td>
+<td align="center">b^(a^b)=a</td>
+</tr>
+</tbody></table>
+<p>这样就利用^实现了不引入第三个临时变量实现了两个变量的交换，这种交换方式在性能上并没有什么优势，仅仅是一种智力游戏.</p>
+<h4 id="2-11-利用inplace-swap函数实现数组两端依次对调"><a href="#2-11-利用inplace-swap函数实现数组两端依次对调" class="headerlink" title="2.11 利用inplace_swap函数实现数组两端依次对调"></a>2.11 利用inplace_swap函数实现数组两端依次对调</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">reverse_array</span><span class="params">(<span class="keyword">int</span> a[],<span class="keyword">int</span> cnt)</span></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> first,last;</span><br><span class="line">  <span class="keyword">for</span>(first = <span class="number">0</span>,last = cnt<span class="number">-1</span>;</span><br><span class="line">      first &lt;= last;</span><br><span class="line">      first++,last--)&#123;</span><br><span class="line">        inplace_swap(&amp;a[first],&amp;a[last]);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面这个函数，对包含1,2,3,4元素的数组来说可以按预期那样变为4,3,2,1;但是，当一个包含1,2,3,4,5元素的数组使用该函数时却会看到5,4,0,2,1的结果.实际上，上面的函数对偶数项数组都能正确工作，但是对于奇数项的总会把中间项设置位0. </p>
+<ul>
+<li>A.对于一个长度为奇数的数组，长度cnt=2k+1,函数reverse_array最后一次循环中，变量first和last的值分别是什么? <code>first=last=k</code></li>
+<li>B.为什么这时候调用inplace_swap函数会将数组元素置为0? <code>因为&amp;a[k]^&amp;a[k]=0</code></li>
+<li>C.对reverse_array的代码做哪些改动即可解决该问题? <code>因为中间元素不需要交换，故把first&lt;=last条件改为first&lt;last即可</code>.</li>
+</ul>
+<h4 id="2-12-掩码运算"><a href="#2-12-掩码运算" class="headerlink" title="2.12 掩码运算"></a>2.12 掩码运算</h4><p>对于下面的值，写出C语言表达式，并且代码对于任何w≥8都能工作.我们给出0x87654321以及w=32时的表达式求值结果，以供参考:</p>
+<ul>
+<li>A.x的最低有效字节,其它位置均为0. [0x00000021] &nbsp;&nbsp;&nbsp;&nbsp;<code>x&amp;0xFF</code></li>
+<li>B.除了x的最低有效字节外,其它位置都取补.[0x789ABC21] &nbsp;&nbsp;&nbsp;&nbsp; <code>x^~0xFF</code></li>
+<li>C.x的最低有效字节全部设置为1，其它字节保持不变.[0x876543FF] &nbsp;&nbsp;&nbsp;&nbsp; <code>x|0xFF</code></li>
+</ul>
+<h4 id="2-13-bis-位设置-和bic-位清除-函数"><a href="#2-13-bis-位设置-和bic-位清除-函数" class="headerlink" title="2.13 bis(位设置)和bic(位清除)函数"></a>2.13 bis(位设置)和bic(位清除)函数</h4><p>这两种指令输入都是一个数据字x和一个掩码m,生成一个结果z,z是根据掩码m的位来设置x的位得到的.  </p>
+<ul>
+<li>bis：在m为1的每个位置上，将x对应的位设置为1</li>
+<li>bic：在m为1的每个位置上，将x对应的位设置为0</li>
+</ul>
+<p>现在，不使用任何其它C语言运算，实现|和^运算</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*bis和bic函数声明*/</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bis</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> m)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bic</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> m)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*使用bis和bic函数实现x|y运算*/</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bool_or</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> result = bis(x,y);</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*使用bis和bic函数实现x^y运算*/</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bool_xor</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> result = bis(bic(x,y),bic(y,x));</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>注:bis运算等价于布尔or；bic(x,m)等价于x&amp;~m,即实现x对应位为1且m对应位为0时，该位等于1.   由此，我们可以调用一次bis来实现|运算。对于实现^运算则需要使用以下性质:     x^y=(x&amp;~y)|(~x&amp;y) 可以推导:x^y=bic(x,y)|bic(y,x)=bis(bic(x,y),bic(y,x))</code></p>
+<h4 id="2-14-逻辑运算与位级运算比较"><a href="#2-14-逻辑运算与位级运算比较" class="headerlink" title="2.14 逻辑运算与位级运算比较"></a>2.14 逻辑运算与位级运算比较</h4><p>假设x和y的值分别是0x66和0x39，填写下表:  </p>
+<table>
+<thead>
+<tr>
+<th align="left">值</th>
+<th align="left">二进制</th>
+<th align="left">~</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">0x66</td>
+<td align="left">0110 0110</td>
+<td align="left">1001 1001</td>
+</tr>
+<tr>
+<td align="left">0x39</td>
+<td align="left">0011 1001</td>
+<td align="left">1100 0110</td>
+</tr>
+</tbody></table>
+<p>|  表达式   |  值 ||  表达式   |  值 |<br>| :– | :–|:–| :–|<br>| x &amp; y  | 0010 0000=0x20 | | x &amp;&amp; y|0x01|<br>| x &#124; y  | 0111 1111=0x7F||x &#124;&#124;y|0x01|<br>| <del>x &#124; ~y  | 1101 1111=0xDF||</del>x &#124;&#124;~y|0x00|<br>| ~x &amp; !y  | 0000 0000=0x00||x &amp;&amp; ~y|0x01|</p>
+<p><code>注意!是逻辑运算符，因此!y=0x00</code></p>
+<h4 id="2-15"><a href="#2-15" class="headerlink" title="2.15"></a>2.15</h4><p>只用位级和逻辑运算，编写一个C表达式，它等价于x==y.换句话说，当x和y相等时它将返回1,否则返回0. &nbsp;&nbsp;&nbsp;&nbsp;<code>!(x^y)</code></p>
+<h4 id="2-16-位移运算"><a href="#2-16-位移运算" class="headerlink" title="2.16 位移运算"></a>2.16 位移运算</h4><table><tr><td colspan=2 style="border:1px solid;text-align:center">x</td><td colspan=2 style="border:1px solid;text-align:center">x<<3</td><td colspan=2 style="border:1px solid;text-align:center">x>>2(逻辑的)</td><td colspan=2 style="border:1px solid;text-align:center">x>>2(算术的)</td></tr><tr><td style="border:1px solid;text-align:center">十六进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">十六进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">十六进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">十六进制</td></tr><tr><td style="border-left:1px solid;border-right:1px solid;">0xC3</td><td style="border-right:1px solid;">1100 0011</td><td style="border-right:1px solid;">0001 1000</td><td style="border-right:1px solid;">0x18</td><td style="border-right:1px solid;">0011 0000</td><td style="border-right:1px solid;">0x30</td><td style="border-right:1px solid;">1111 0000</td><td style="border-right:1px solid;">0xF0</td></tr><tr><td style="border-left:1px solid;border-right:1px solid;">0x75</td><td style="border-right:1px solid;">0111 0101</td><td style="border-right:1px solid;">1010 1000</td><td style="border-right:1px solid;">0xA8</td><td style="border-right:1px solid;">0001 1101</td><td style="border-right:1px solid;">0x1D</td><td style="border-right:1px solid;">0001 1101</td><td style="border-right:1px solid;">0x1D</td></tr><tr><td style="border-left:1px solid;border-right:1px solid;">0x87</td><td style="border-right:1px solid;">1000 0111</td><td style="border-right:1px solid;">0011 1000</td><td style="border-right:1px solid;">0x38</td><td style="border-right:1px solid;">0010 0001</td><td style="border-right:1px solid;">0x21</td><td style="border-right:1px solid;">1110 0001</td><td style="border-right:1px solid;">0xE1</td></tr><tr><td style="border-bottom:1px solid;border-left:1px solid;border-right:1px solid;">0x66</td><td style="border-bottom:1px solid;border-right:1px solid;">0110 0110</td><td style="border-bottom:1px solid;border-right:1px solid;">0011 0000</td><td style="border-bottom:1px solid;border-right:1px solid;">0x30</td><td style="border-bottom:1px solid;border-right:1px solid;">0001 1001</td><td style="border-bottom:1px solid;border-right:1px solid;">0x19</td><td style="border-bottom:1px solid;border-right:1px solid;">00001 1001</td><td style="border-bottom:1px solid;border-right:1px solid;">0x19</td></tr></table>
+#### 2.17 无符号数、有符号数转换
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML">
+</script>
+ <style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:center}
+.tg .tg-nb2d{font-size:100%;border-color:inherit;text-align:center;vertical-align:middle}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:middle}
+.tg .tg-0pky{border-color:inherit;text-align:center;vertical-align:middle}
+.tg .tg-0lax{text-align:center;vertical-align:middle}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-0pky" colspan="2">$\vec{x}$</th>
+    <th class="tg-nb2d" rowspan="2">$B2U_{4}(\vec{x})$</th>
+    <th class="tg-c3ow" rowspan="2">$B2T_{4}(\vec{x})$</th>
+  </tr>
+  <tr>
+    <td class="tg-0pky">十六进制</td>
+    <td class="tg-0pky">二进制</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">0xE</td>
+    <td class="tg-0pky">[1110]</td>
+    <td class="tg-0pky">$2^3+2^2+2^1=14$</td>
+    <td class="tg-0pky">$-2^3+2^2+2^1=-2$</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">0x0</td>
+    <td class="tg-0pky">[0000]</td>
+    <td class="tg-0pky">0</td>
+    <td class="tg-0pky">0</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">0x5</td>
+    <td class="tg-0lax">[0101]</td>
+    <td class="tg-0lax">$2^2+2^1=5$</td>
+    <td class="tg-0lax">5</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">0x8</td>
+    <td class="tg-0lax">[1000]</td>
+    <td class="tg-0lax">$2^3=8$</td>
+    <td class="tg-0lax">$-2^3=-8$</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">0xD</td>
+    <td class="tg-0lax">[1101]</td>
+    <td class="tg-0lax">$2^3+2^2+2^0=13$</td>
+    <td class="tg-0lax">$-2^3+2^2+2^0=-3$</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">0xF</td>
+    <td class="tg-0lax">[1111]</td>
+    <td class="tg-0lax">$2^3+2^2+2^1+2^0=15$</td>
+    <td class="tg-0lax">$-2^3+2^2+2^1+2^0=-1$</td>
+  </tr>
+</table>
+
+#### 2.19 有符号数转无符号数
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-s6z2{text-align:center}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-s6z2">x</th>
+    <th class="tg-s6z2">$T2U_{4}(x)$</th>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-8</td>
+    <td class="tg-s6z2">8</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-3</td>
+    <td class="tg-s6z2">13</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2</td>
+    <td class="tg-s6z2">14</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-1</td>
+    <td class="tg-s6z2">15</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">0</td>
+    <td class="tg-s6z2">0</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">5</td>
+    <td class="tg-s6z2">5</td>
+  </tr>
+</table>
+原理: 补码转无符号数:  
+对满足$TMin_{w} \leqslant x \leqslant TMax_{w}$的x有:
+$$T2U_{w}(x)= \left\{\begin{matrix}
+ & x + 2^{w},x< 0 & \\ 
+ & x,x\geqslant 0 & 
+\end{matrix}\right. $$
+
+#### 2.20 T2U公式的运用
+
+<p>$x=-8,T2U_{4}(-8)=-8+2^{4}=-8+16=8$</p>
+<p>$x=-3,T2U_{4}(-3)=-3+2^{4}=-3+16=13$</p>
+<p>$x=-2,T2U_{4}(-2)=-2+2^{4}=-2+16=14$</p>
+<p>$x=-1,T2U_{4}(-1)=-1+2^{4}=-1+16=15$</p>
+<p>$x=0 \geqslant 0,T2U_{4}(0)=0$</p>
+<p>$x=5 \geqslant 0,T2U_{4}(5)=5$</p>
+
+#### 2.21 无符号数和有符号数的类型转换和关系运算
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-s6z2{text-align:center}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-s6z2">表达式</th>
+    <th class="tg-s6z2">类型</th>
+    <th class="tg-baqh">求值</th>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2147483647-1 == 2147483648U</td>
+    <td class="tg-s6z2">无符号数</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2147483647-1 &lt;&nbsp;&nbsp;2147483647</td>
+    <td class="tg-s6z2">有符号数</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2147483647-1U &lt; 2147483647</td>
+    <td class="tg-s6z2">无符号数</td>
+    <td class="tg-baqh">0</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2147483647-1 &lt; -2147483647</td>
+    <td class="tg-s6z2">有符号数</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2147483647-1U &lt; -2147483647</td>
+    <td class="tg-s6z2">无符号数</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+</table>
+<small>注:C语言运算中,如果一个运算数是无符号，另一个是有符号数，那么会隐式的将有符号数转为无符号数再进行运算，另外，$-2147483647-1=TMin_{32};2147483648=2^{31}$</small>  
+<br><br/>
+<p>①-2147483647-1 == 2147483648U: 因为2147483648U是无符号数,所以会将-2147483647-1转为无符号数:$T2U_{32}(-2147483647-1)=T2U_{32}(TMin_{32})=TMax_{32}+1=2^{31}-1+1=2^{31}$,所以二者相等.</p>
+<p>②$-2147483647-1 &lt; 2147483647$:两个都是有符号数，正常比较</p>
+<p>③$-2147483647-1U &lt; 2147483647$:在-2147483647-1U中,1U是无符号数，故-2147483647会转为无符号数,$T2U_{32}(-2147483647)=-2147483647+2^{32}=-2^{31}+1+2^{32}=2^{31}+1$,所以$-2147483647-1U=2^{31}+1-1=2^{31}$,其次$T2U(2147483647)=2^{31}-1$,因此这里运算结果为0</p>
+<p>④-2147483647-1 &lt; -2147483647:两个都是有符号数,正常比较</p>
+<p>⑤-2147483647-1U &lt; -2147483647: 根据③可知左边转为无符号数为$2^{31}$，右边$T2U(-2147483647)=-2^{31}+1+2^{32}=2^{31}+1$,所以小于成立 </p>
+
+
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/csapp/csapp%E4%B8%AD%E7%9A%84%E4%B8%80%E4%B8%AA%E6%95%B0%E7%BB%84%E6%8B%B7%E8%B4%9D%E4%BE%8B%E5%AD%90/" rel="prev" title="csapp中的一个数组拷贝例子">
+      <i class="fa fa-chevron-left"></i> csapp中的一个数组拷贝例子
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/SpringBoot/pringBoot-redis-cache/" rel="next" title="SpringBoot redis-cache">
+      SpringBoot redis-cache <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-%E5%A4%A7%E5%B0%8F%E7%AB%AF%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">2.5 大小端问题:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-6-%E6%AD%A3%E6%95%B0%E4%B8%8E%E6%B5%AE%E7%82%B9%E6%95%B0%E4%BA%8C%E8%BF%9B%E5%88%B6%E4%BD%8D%E6%AF%94%E8%BE%83"><span class="nav-number">2.</span> <span class="nav-text">2.6 正数与浮点数二进制位比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-7"><span class="nav-number">3.</span> <span class="nav-text">2.7</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-8-%E4%BD%8D%E5%90%91%E9%87%8F%E5%B8%83%E5%B0%94%E8%BF%90%E7%AE%97%E5%8F%8A%E7%9B%B8%E5%85%B3%E5%AE%9A%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">2.8 位向量布尔运算及相关定理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-9-RGB%E4%B8%89%E5%8E%9F%E8%89%B2"><span class="nav-number">5.</span> <span class="nav-text">2.9 RGB三原色</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-10-%E4%B8%8D%E4%BD%BF%E7%94%A8%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F%E7%9A%84%E4%BA%A4%E6%8D%A2%E5%80%BC"><span class="nav-number">6.</span> <span class="nav-text">2.10 不使用临时变量的交换值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-11-%E5%88%A9%E7%94%A8inplace-swap%E5%87%BD%E6%95%B0%E5%AE%9E%E7%8E%B0%E6%95%B0%E7%BB%84%E4%B8%A4%E7%AB%AF%E4%BE%9D%E6%AC%A1%E5%AF%B9%E8%B0%83"><span class="nav-number">7.</span> <span class="nav-text">2.11 利用inplace_swap函数实现数组两端依次对调</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-12-%E6%8E%A9%E7%A0%81%E8%BF%90%E7%AE%97"><span class="nav-number">8.</span> <span class="nav-text">2.12 掩码运算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-13-bis-%E4%BD%8D%E8%AE%BE%E7%BD%AE-%E5%92%8Cbic-%E4%BD%8D%E6%B8%85%E9%99%A4-%E5%87%BD%E6%95%B0"><span class="nav-number">9.</span> <span class="nav-text">2.13 bis(位设置)和bic(位清除)函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-14-%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E4%B8%8E%E4%BD%8D%E7%BA%A7%E8%BF%90%E7%AE%97%E6%AF%94%E8%BE%83"><span class="nav-number">10.</span> <span class="nav-text">2.14 逻辑运算与位级运算比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-15"><span class="nav-number">11.</span> <span class="nav-text">2.15</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-16-%E4%BD%8D%E7%A7%BB%E8%BF%90%E7%AE%97"><span class="nav-number">12.</span> <span class="nav-text">2.16 位移运算</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">gslg</p>
+  <div class="site-description" itemprop="description">java笔记整理</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gslg" title="GitHub → https://github.com/gslg" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">gslg</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">56k</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

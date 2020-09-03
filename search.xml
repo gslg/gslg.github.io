@@ -1,0 +1,1365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>有符号数和无符号数</title>
+    <url>/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/2-2-%E6%95%B4%E6%95%B0%E8%A1%A8%E7%A4%BA/</url>
+    <content><![CDATA[<p>C语言中，整数包括有符号数和无符号数两种，这点和java有所不同，java中只支持有符号数.</p>
+<a id="more"></a>
+<h4 id="无符号数编码"><a href="#无符号数编码" class="headerlink" title="无符号数编码"></a>无符号数编码</h4><p>无符号数简单理解就是非负数,在计算机中，所有的信息都是基于二进制表示的.假设一个整数数据类型有w位，用向量表示为  </p>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML">
+</script>
+<p>
+$$\vec{x}=[x_{w-1},x_{w-2}...x_{1},x_{0}]$$
+</p>   
+  
+<p>在向量$\vec{x}$中，如果每一个位$x_{i}$都取值0或1,就可以把$\vec{x}$看作是一个二进制表示的无符号数.用函数B2$U_{w}$(Binary to Unsigned缩写,长度w)来表示将一个w位二进制转换为无符号数:<br>$$B2U_{w} \doteq \sum_{i=0}^{w-1}x_{i}2^{i} $$</p>
+<p>符号$\doteq$表示左边的定义等于右边的定义  </p>
+
+<p>例子:</p>
+$B2U_{4}([0001]) = 0\cdot2^{3}+ 0\cdot2^{2} + 0\cdot2^{1} + 1\cdot2^{0} = 1$
+$B2U_{4}([1011]) = 1\cdot2^{3}+ 0\cdot2^{2} + 1\cdot2^{1} + 1\cdot2^{0} = 11$
+$B2U_{4}([1010]) = 1\cdot2^{3}+ 0\cdot2^{2} + 1\cdot2^{1} + 0\cdot2^{0} = 10$
+$B2U_{4}([1111]) = 1\cdot2^{3}+ 1\cdot2^{2} + 1\cdot2^{1} + 1\cdot2^{0} = 15$
+
+<h5 id="无符号数最大值"><a href="#无符号数最大值" class="headerlink" title="无符号数最大值"></a>无符号数最大值</h5><p>很容易看出，当每一位$x_{i}$都取值为1即$\vec{x}=[1,1,…1,1]$时，可以表示该无符号数的最大值;当每一位为0时是最小值，也就是0.<br>$$UM_{ax_{w}} \doteq \sum_{i=0}^{w-1}2^{i}=2^{w}-1$$<br>以4位的情况为例,$UMax_{4}= B2U_{4}([1111]) =2^{4}-1 = 15$  </p>
+<h5 id="唯一性"><a href="#唯一性" class="headerlink" title="唯一性"></a>唯一性</h5><p>因此，无符号数有一个重要特性,即介于0～$2^{w}-1$之间的数都有唯一一个w位的编码表示.反过来，任意一个长度位w的位向量都映射0～$2^{w}-1$之间的唯一值.</p>
+<h4 id="补码编码"><a href="#补码编码" class="headerlink" title="补码编码"></a>补码编码</h4><p>计算机中表示负数最常见的就是补码(two’s-complement)形式,在该定义中，将最高有效位解释为负权.用函数$B2T_{w}$(binary to two’s-complement,长度为w)来表示： </p>
+
+   <p>补码编码定义:<p>
+	<p>对向量$\vec{x}=[x_{w-1},x_{w-2}...x_{1},x_{0}]$:</p>
+    $$B2T_{w}(\vec{x}) \doteq -x_{w-1}2^{w-1}+\sum_{i=0}^{w-2}x_{i}2^{i} $$
+
+<p>最高有效位$x_{w-1}$也是符号位，它的权重是$-2^{w-1}$.当符号位设置为1时，表示值为负；当符号位设置为0时，值为非负.</p>
+
+	<p>例子:</p>
+    <p>$B2T_{4}([0001])=-0\cdot2^{3}+0\cdot2^{2}+0\cdot2^{1}+1\cdot2^{0}=0+0+0+1=1$</p>
+    <p>$B2T_{4}([0101])=-0\cdot2^{3}+1\cdot2^{2}+0\cdot2^{1}+1\cdot2^{0}=0+4+0+1=5$</p>
+    <p>$B2T_{4}([1011])=-1\cdot2^{3}+0\cdot2^{2}+1\cdot2^{1}+1\cdot2^{0}=-8+0+2+1=-5$</p>
+    <p>$B2T_{4}([1111])=-1\cdot2^{3}+1\cdot2^{2}+1\cdot2^{1}+1\cdot2^{0}=-8+4+2+1=-1$</p>
+
+<h5 id="补码表示值范围"><a href="#补码表示值范围" class="headerlink" title="补码表示值范围"></a>补码表示值范围</h5><p>根据定义很容易看出:</p>
+<ul>
+<li>向量<a href="%E4%B9%9F%E5%B0%B1%E6%98%AF%E7%AC%A6%E5%8F%B7%E4%BD%8D%E8%AE%BE%E7%BD%AE%E4%B8%BA1%EF%BC%8C%E5%85%B6%E5%AE%83%E4%BD%8D%E8%AE%BE%E7%BD%AE%E4%B8%BA0">10..0</a>表示的值最小，它的整数值为$TMin_{w}\doteq-2^{w-1}$</li>
+<li>向量<a href="%E7%AC%A6%E5%8F%B7%E4%BD%8D%E8%AE%BE%E7%BD%AE%E4%B8%BA0%EF%BC%8C%E5%85%B6%E5%AE%83%E4%BD%8D%E8%AE%BE%E7%BD%AE%E4%B8%BA1">01..1</a>表示的值最大，它的整数值为$TMax_{w}\doteq\sum_{i=0}^{w-2}x_{i}2^{i}=2^{w-1}-1$<br>例如,$TMin_{4}=B2T_{4}([1000])=-2^{3}-8$,而$TMax_{4}=B2T_{4}([0111])=2^{3}-1=7$</li>
+</ul>
+<p>综上，$B2T_{w}$是一个长度为w的位模式到$TMin_{w}$和$TMax_{w}$之间数字的映射，写作</p>
+
+$B2T_{w}: \{0,1\}^{w}\rightarrow\{TMin_{w},...,TMax_{w}\}$
+
+
+<h5 id="唯一性-1"><a href="#唯一性-1" class="headerlink" title="唯一性"></a>唯一性</h5><p>同无符号数一样,在可表示的数值范围内每个数字都有唯一一个w位的补码编码。<br><code>原理</code>:补码编码的唯一性，函数$B2T_{w}$是一个双射.<br>用函数$T2B_{w}$(即补码到二进制)作为$B2T_{w}$的反函数,也就是说，对于每个x,<br>满足$TMin_{w}\leqslant x \leqslant TMax_{w}$,那么$T2B_{w}(x)$是x的唯一w位模式</p>
+<h4 id="有符号数和无符号数之间的转换"><a href="#有符号数和无符号数之间的转换" class="headerlink" title="有符号数和无符号数之间的转换"></a>有符号数和无符号数之间的转换</h4><p>在C语言中,不同数据类型之间的转换称为强制类型转换.例如,假设变量x声明为int,u声明为unsigned.那么表达式<code>(unsigned)x</code>会将x的值强制转换为一个无符号数值，而<code>(int)u</code>会将u的值转为一个有符号数值。对于大多数C语言实现来说，强制类型转换是从位级角度来说明的，而不是从数的角度.<br>例如,看以下代码片段:  </p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">short</span> <span class="keyword">int</span> v = <span class="number">-12345</span>;</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">short</span> uv = (<span class="keyword">unsigned</span> <span class="keyword">short</span>)v;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;v = %d,uv = %u\n&quot;</span>,v,uv);</span><br></pre></td></tr></table></figure>
+<p>在一台采用补码机器上运行，会得到以下输出:  </p>
+<blockquote>
+<p>v = -12345,uv = 53191</p>
+</blockquote>
+<p>其实$T2B_{16}(-12345) = U2B_{16}(53191)=[1100 1111 1100 0111]=0xCFC7$,我们发现强制类型转换的结果保持位模式不变，只是改变了解释这些位的方式。有符号数-12345的16位补码表示和53191的16位无符号位模式完全一样。<br>类似的,以下代码</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">unsigned</span> u = <span class="number">4294967295</span>;<span class="comment">/*UMax*/</span></span><br><span class="line"><span class="keyword">int</span> tu = (<span class="keyword">int</span>)u;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;u = %u,tu = %d\n&quot;</span>,u,tu);</span><br></pre></td></tr></table></figure>
+<p>在一台采用补码机器上运行，会得到以下输出:</p>
+<blockquote>
+<p>u = 4294967295,tu = -1</p>
+</blockquote>
+<p>对32位字长来说，无符号形式4294967295($UMax_{32}$)和补码形式的-1的位模式完全一样.</p>
+<h5 id="一般定理"><a href="#一般定理" class="headerlink" title="一般定理"></a>一般定理</h5><p>对于大多数C语言实现，处理同样字长的有符号数和无符号数之间的转换一般规则是:<br><em>数值可能会改变，但是位模式不变</em></p>
+
+<p>定义函数:</p>
+<ul>
+  <li>$U2B_{w}(x)$:对于给定$0 \leqslant x \leqslant UMax_{w}$范围内的整数x,函数$U2B_{w}(x)$会得到x唯一的w位无符号表示</li>
+  <li>$T2B_{w}(x)$:对于给定$TMin_{w} \leqslant x \leqslant TMax_{w}$范围内的整数x,函数$T2B_{w}(x)$会得到x唯一的w位补码表示</li>
+ </ul> 
+ <p>根据上面两个函数的定义，我们可以推广:</p>
+ <ul>
+  <li>补码转有符号数: 对于$TMin_{w} \leqslant x \leqslant TMax_{w}$范围类的整数x, 函数$T2U_{w}(x) \doteq B2U_{w}(T2B_{w}(x))$将x转为0～$UMax_{w}$之间的数</li>
+  <li>有符号数转补码:对于0～$UMax_{w}$之间的数，函数$U2T_{w}(x) \doteq B2T_{w}(U2B_{w}(x))$ 将无符号数x转为补码表示有符号数</li>
+</ul>
+
+
+<h5 id="补码转无符号数"><a href="#补码转无符号数" class="headerlink" title="补码转无符号数"></a>补码转无符号数</h5>
+ <p>定理:</p>
+ <p>$对满足TMin_{w} \leqslant x \leqslant TMax_{w}的x有:$</p>
+ <p>$$T2U_{w}(x)= \begin{cases}
+  x+2^{w},& x< 0 \\ 
+ x, & x \geqslant 0
+\end{cases}$$<label style="float:right">(公式2.5)</label></p>
+<p>推导:</p>
+<p>$\because$</p>
+<p>$B2U_{w}(\overrightarrow{x})=\sum_{i=0}^{w-1}x_{i}2^{i}=x_{w-1}2^{w-1}+\sum_{i=0}^{w-2}x_{i}2^{i}$ <label style="float:right">①</label></p>
+<p>$B2T_{w}(\overrightarrow{x})=-x_{w-1}2^{w-1}+\sum_{i=0}^{w-2}x_{i}2^{i}$ <label style="float:right">②</label></p>
+<p>$\therefore$ 由公式①-②</p>
+<p>$B2U_{w}(\overrightarrow{x})-B2T_{w}(\overrightarrow{x})=x_{w-1}2^{w-1}-(-x_{w-1}2^{w-1})=x_{w-1}2^{w}$ <label style="float:right">③</label><p>
+<p>$\therefore$</p>
+<p>$B2U_{w}(\overrightarrow{x})=x_{w-1}2^{w}+B2T_{w}(\overrightarrow{x})$<label style="float:right">④</label></p>
+<p>又$\because$根据定义</p>
+<p>$T2U_{w}(x) \doteq B2U_{w}(T2B_{w}(x))$<label style="float:right">⑤</label></p>
+<p>$\therefore$将④代入⑤中可得证:</p>
+<p>$T2U_{w}(x)=B2U_{w}(T2B_{w}(x))=x_{w-1}2^{w}+B2T_{w}(T2B_{w}(x))=x_{w-1}2^{w}+x$<label style="float:right">⑥</label></p>
+从最终得到的⑥中可以看出,在$x$的补码表示中,位$x_{w-1}$决定了$x$是否为负.
+当位$x_{w-1}=0$,即$x$为非负数时，$T2U_{w}(x)=0\cdot2^{w}+x=x$;当位$x_{w-1}=1$,即$x$为负数时，$T2U_{w}(x)=1\cdot2^{w}+x=x+2^{w}$;因此公式2.5得证.
+
+
+<h5 id="无符号数转补码"><a href="#无符号数转补码" class="headerlink" title="无符号数转补码"></a>无符号数转补码</h5>
+<p>定理:</p>
+<p>对满足$0 \leqslant u \leqslant UMax_{w}$的u有:</p>
+<p>$$U2T_{w}(u)= \begin{cases}
+  u, & u \leqslant TMax_{w} \\ 
+  u-2^{w},& u>TMax_{w}
+\end{cases}$$<label style="float:right">(公式2.6)</label></p>
+<p>推导:</p>
+<p>$\because$</p>
+<p>由上面的公式④我们可以得到:</p>
+<p>$B2T_{w}(\overrightarrow{u})=B2U_{w}(\overrightarrow{u})-u_{w-1}2^{w}$<label style="float:right">⑦</label></p>
+<p>又$\because$根据定义</p>
+<p>$U2T_{w}(u) \doteq B2T_{w}(U2B_{w}(u))$<label style="float:right">⑧</label></p>
+<p>$\therefore$将⑦代入⑧中可得证:</p>
+<p>$U2T_{w}(u)=B2T_{w}(U2B_{w}(u))=B2U_{w}(U2B_{w}(u))-u_{w-1}2^{w}=u-u_{w-1}2^{w}$<label style="float:right">⑨</label></p>
+<p>因此，根据最终得到的公式⑨可以看出位$u_{w-1}$决定了u是否大于$TMax_{w}=2^{w-1}-1$:</p>
+<ul>
+  <li>当位$u_{w-1}为1时，U2T_{w}(u)=u-2^{w},这个时候u>TMax_{w}$</li>
+  <li>当位$u_{w-1}为0时，U2T_{w}(u)=u-0\cdot2^{w}=u,此时u \leqslant TMax_{w}$</li>
+</ul>
+
+
+<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><p>总结一下，对于在$0 \leqslant x \leqslant TMax_{w}$范围内的x来说,我们可以发现$T2U_{w}(x)=x和U2T_{w}(x)=x$,也就是说这个范围内的数字具有相同的无符号数和补码表示。对于这个范围之外的x，需要加上或减去$2^{w}$。</p>
+
+<p>例子:</p>
+<p>$T2U_{w}(-1)=-1+2^{w}=UMax_{w}$</p>
+<p>$T2U_{w}(TMin_{w})=-2^{w-1}+2^{w}=2^{w-1}=TMax_{w}+1$</p>
+<p>$T2U_{16}(-12345)=-12345+2^{16}=53191$</p>
+
+
+<h5 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h5>
+<ul>
+  <li>关于$\sum_{i=0}^{w-1}2^{i}=2^{w}-1$可以通过等比数列求和公式推导出来;也可以从位的角度来考虑:
+ $$\vec{u}=[1_{w-1},1_{w-2},...,1_{1},1_{0}]$$,我们对这个二进制+1,可以得到$$\vec{{u}'}=[1_{w},0_{w-1},0_{w-2},...,0_{1},0_{0}]$$,也就是$B2U_{w+1}(\vec{{u}'})=2^{w}$,因此$B2U_{w}(\vec{u})=2^{w}-1$</li>
+</ul>
+
+<h4 id="C语言中有符号数和无符号数"><a href="#C语言中有符号数和无符号数" class="headerlink" title="C语言中有符号数和无符号数"></a>C语言中有符号数和无符号数</h4><ul>
+<li>C语言支持所有整型数据类型的有符号和无符号运算</li>
+<li>C语言标准虽然并没有规定有符号数要采用某种表示，但几乎所有的机器都使用<code>补码表示</code></li>
+<li>通常大多数数值都默认是有符号的,例如声明一个像12345或0x1A2B这样的常量时，这些值是被认为是有符号的。要声明无符号常量，必须加上后缀字符’U’或者’u’,例如12345U或者0x1A3Bu</li>
+<li>C语言允许无符号数和有符号数之间进行转换。虽然C标准没有规定转换的方式，但是大多数系统都遵循的原则是底层的<code>位表示保持不变</code></li>
+<li>C语言运算中，如果一个运算数是有符号的，另一个运算数是无符号的，那么<code>C语言会隐式的将有符号数转为无符号数</code>，并假设这两个数都是非负的，来执行该运算.</li>
+</ul>
+]]></content>
+      <categories>
+        <category>深入理解计算机系统</category>
+      </categories>
+      <tags>
+        <tag>csapp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java类和接口的初始化</title>
+    <url>/uncategorized/Java%E7%B1%BB%E5%92%8C%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/</url>
+    <content><![CDATA[<p>类的初始化由执行类中静态代码块的初始化和类中声明的静态域的初始化两部分组成<br>接口的初始化由接口中声明的域（常量）的初始化组成</p>
+<h4 id="初始化的时机"><a href="#初始化的时机" class="headerlink" title="初始化的时机"></a>初始化的时机</h4><p>类或接口T在以下任意情况发生之前会立即进行初始化:</p>
+<ul>
+<li><p>T是一个类并且创建了一个T的实列</p>
+</li>
+<li><p>T中声明的一个静态方法被调用</p>
+</li>
+<li><p>T中声明的一个静态域被分配(assigned)</p>
+</li>
+<li><p>T中的一个静态域被使用并且该域不是一个常量变量(constant variable)</p>
+<p>当一个类被初始化时，它的超类也会被初始化(如果之前未被初始化的话)，以及声明任何默认方法的父接口也会被初始化(如果之前未被初始化)；<code>接口自身的初始化并不会导致其父接口的初始化</code>  </p>
+<p>引用一个静态域(<code>static field</code>)只会导致实际声明该域的类进行初始化，尽管它可能通过子类名、子接口、或者实现接口的某个类名进行引用。</p>
+<p>调用<code>Class</code>类或包<code>java.lang.reflect</code>中的某些方法也会导致类或接口进行初始化<code>(Class.forName)</code>.</p>
+<a id="more"></a>
+
+<p>对于上面4种情况,我们可以举例来验证一下.下面Hello这个类声明了一个常量A，常量变量B(具体什么是常量变量可以参考《java language specification》第4.12.4节)，一个静态变量c,以及两个静态代码块(23-30行)</p>
+</li>
+</ul>
+ <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Hello</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**常量*/</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> A = initA();</span><br><span class="line">    <span class="comment">/**常量变量*/</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> B = <span class="number">10</span>;</span><br><span class="line">    <span class="comment">/**静态域*/</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> c;</span><br><span class="line">    <span class="comment">/**静态代码块1*/</span></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Hello静态代码块加载了1.........&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**静态代码块2*/</span></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Hello静态代码块加载了2.........&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Hello构造函数初始化了........&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Hello.hello方法被调用了........&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">initA</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Hello.initA方法被调用了........&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">10</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着，我们写测试类来依次验证上述4种情况.  </p>
+<h6 id="1-验证实例化"><a href="#1-验证实例化" class="headerlink" title="1.验证实例化"></a>1.验证实例化</h6><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**测试Hello实例化*/</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">new</span> Hello();</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>可以在控制台看到如下输出: </p>
+<blockquote>
+<p>Hello.initA方法被调用了……..<br>Hello静态代码块加载了1………<br>Hello静态代码块加载了2………<br>Hello构造函数初始化了……..  </p>
+</blockquote>
+<p>从输出中我们可以看到Hello类确实在<code>实例化之前</code>被初始化了,同时因为Hello是一个类，它的初始化包括静态代码块的执行和静态域的初始化两部分，这点从输出中也可以得到印证。首先第一行输出证明初始化了静态域A(<code>接着是B,c这里没法从输出中直观的验证</code>)；接着第2,3行输出证明初始化执行了静态代码块1和2(<code>静态域或静态代码块的执行顺序和声明顺序有关</code>)；最后一行表明Hello的构造函数被调用。</p>
+<h6 id="2-测试静态方法的调用"><a href="#2-测试静态方法的调用" class="headerlink" title="2.测试静态方法的调用"></a>2.测试静态方法的调用</h6><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/** 测试调用Hello的静态方法*/</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testStaticMethodInvoke</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Hello.hello();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>控制台输出:</p>
+<blockquote>
+<p>Hello.initA方法被调用了……..<br>Hello静态代码块加载了1………<br>Hello静态代码块加载了2………<br>Hello.hello方法被调用了……..    </p>
+</blockquote>
+<p>这里我们调用了Hello类中的静态方法getA,同理可以看到类A首先进行了初始化。</p>
+<h6 id="3-测试静态域被分配-即赋值"><a href="#3-测试静态域被分配-即赋值" class="headerlink" title="3.测试静态域被分配(即赋值)"></a>3.测试静态域被分配(即赋值)</h6><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**测试静态域被赋值*/</span></span><br><span class="line"> <span class="meta">@Test</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testStaticFieldAssigned</span><span class="params">()</span></span>&#123;</span><br><span class="line">     Hello.c = <span class="number">20</span>;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>控制台输出:</p>
+<blockquote>
+<p>Hello.initA方法被调用了……..<br>Hello静态代码块加载了1………<br>Hello静态代码块加载了2………  </p>
+</blockquote>
+<p>同理可以得出静态域被分配(赋值)也会触发初始化操作</p>
+<h6 id="4-测试使用类的常量"><a href="#4-测试使用类的常量" class="headerlink" title="4.测试使用类的常量"></a>4.测试使用类的常量</h6><p>我们首先测试使用常量A</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**测试调用Hello的常量A*/</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testConstantA</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">int</span> a =  Hello.A;</span><br><span class="line">   System.out.println(<span class="string">&quot;a=&quot;</span> + a);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>控制台输出:</p>
+<blockquote>
+<p>Hello.initA方法被调用了……..<br>Hello静态代码块加载了1………<br>Hello静态代码块加载了2………<br>a=10  </p>
+</blockquote>
+<p>可以看到调用常量A触发了类Hello的初始化动作.<br>再来测试使用常量B:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**测试调用Hello的常量B*/</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testConstantVariableB</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">int</span> b =  Hello.B;</span><br><span class="line">    System.out.println(<span class="string">&quot;b=&quot;</span> + b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>控制台输出:</p>
+<blockquote>
+<p>b=10  </p>
+</blockquote>
+<p>会奇怪的发现控制台只输出了b=10,而没有其他信息。<code>也就是说使用Hello.B并没有触发Hello类的初始化动作;</code><br>这是为什么呢?<br>我们再次看第4种情况<code>T中的一个静态域被使用并且该域不是一个常量变量(constant variable)</code>,T中一个静态域被使用也会触发类的初始化操作，但是有一个前提是该静态域必须不是一个常量变量.对于常量变量的定义可以详见java语言规范中第4.12.4节的定义，这里先简单说明一下，对于类中的用<code>final static</code>声明的常量字段，如果直接使用基本类型或string类型的字面量表达式直接赋了值，那么就可以认为该字段是一个常量变量.因此Hello类中的静态字段B是一个常量变量，使用它不会触发Hello类的初始化操作.</p>
+<h6 id="5-最后测试一下如果几种情况同时出现"><a href="#5-最后测试一下如果几种情况同时出现" class="headerlink" title="5.最后测试一下如果几种情况同时出现"></a>5.最后测试一下如果几种情况同时出现</h6><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/** 测试所有情况*/</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testAll</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">new</span> Hello();</span><br><span class="line">    Hello.hello();</span><br><span class="line">    System.out.println(<span class="string">&quot;Hello.A=&quot;</span> + Hello.A);</span><br><span class="line">    System.out.println(<span class="string">&quot;Hello.B=&quot;</span> + Hello.B);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>控制台输出:</p>
+<blockquote>
+<p>Hello.initA方法被调用了……..<br>Hello静态代码块加载了1………<br>Hello静态代码块加载了2………<br>Hello构造函数初始化了……..<br>Hello.hello方法被调用了……..<br>Hello.A=10<br>Hello.B=10  </p>
+</blockquote>
+<p>可以看到,<code>类Hello只会被初始化一次</code>。</p>
+]]></content>
+      <tags>
+        <tag>jls</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Redis 持久化</title>
+    <url>/redis/RedisPersistence/</url>
+    <content><![CDATA[<h2 id="Redis持久化"><a href="#Redis持久化" class="headerlink" title="Redis持久化"></a>Redis持久化</h2><p>这里主要总结Redis官方文档中关于Redis持久化的一些描述<br><em>Redis</em>提供了不同的持久性选项:</p>
+<ul>
+<li><strong>RDB</strong>: 以指定的时间间隔执行数据集的时间点快照来进行持久化</li>
+<li><strong>AOF</strong>: AOF持久化会记录服务器接收的每个写入操作，并在服务器启动时再次重放，从而重建原始的数据集。AOF文件使用与Redis协议本身相同的格式，以仅追加(<code>append-only</code>)的方式来记录操作命令。 当AOF文件变得太大时，Redis会在背后重写日志。AOF持久化类似于很多数据库的<code>WAL</code>日志.</li>
+<li>如果你只需要在服务运行的时候持有数据，那么可以禁用持久化功能</li>
+<li>可以将<code>RDB</code>和<code>AOF</code>两种方式结合起来。在这种情况下,当redis重启的时候，<code>AOF</code>文件将用来重建原始的数据集，因为<code>AOF</code>保证是最完整的.<a id="more"></a>
+<h3 id="RDB优点"><a href="#RDB优点" class="headerlink" title="RDB优点"></a>RDB优点</h3></li>
+<li>RDB是Redis数据的一个非常紧凑的单文件时间点表示，非常适合备份。例如，你可能希望在最近24小时内每小时归档一次RDB文件，并在30天内每天保存一次RDB快照。这样即使在发生灾难时也可以轻松恢复数据集的不同版本。</li>
+<li>RDB对于灾难恢复非常好，因为单个压缩文件可以传输到很远的数据中心，或者存放到<code>Amazon S3</code>上（可能是加密的）。</li>
+<li>RDB最大限度地提高了Redis的性能，因为Redis父进程为持久化唯一做的工作就是分配一个将完成所有其余工作的子进程。父实例永远不会执行磁盘I/O或类似操作。</li>
+<li>与AOF相比,RDB在大的数据集时Redis重启更快  </li>
+</ul>
+<h3 id="RDB缺点"><a href="#RDB缺点" class="headerlink" title="RDB缺点"></a>RDB缺点</h3><ul>
+<li>如果需要在Redis突然停止(断电)时将数据丢失的可能性将至最低，RDB不能满足需求.虽然可以配置创建RDB的不同保存点（例如，在对数据集进行至少每五分钟和100次写入之后创建RDB文件）,但是，通常每五分钟或更长时间创建一个RDB快照，因此如果Redis因任何原因停止工作而没有正确关闭，这样就会丢失这段时间内最新产生的数据。</li>
+<li>RDB经常需要<code>fork()</code>才能使用子进程持久存储在磁盘上。如果数据集很大,<code>fork()</code>可能会非常耗时。如果数据集很大并且CPU性能不佳,可能会导致<code>Redis</code>停止服务客户端几毫秒甚至一秒钟。虽然AOF也需要<code>fork()</code>,但可以调整重写日志的频率而不需要对持久性进行任何权衡(因为AOF会记录所有的写请求,基本不会丢失数据，Redis挂掉后重启时从AOF文件中重建数据即可。但是如果调整创建RDB快照的频率的话,需要权衡数据丢失的概率和性能，鱼与熊掌不可兼得啊)</li>
+</ul>
+<h3 id="AOF优点"><a href="#AOF优点" class="headerlink" title="AOF优点"></a>AOF优点</h3><ul>
+<li><p>使用AOF Redis更具有持久性：可以使用不同的<code>fsync</code>策略：</p>
+<ol>
+<li>完全不执行fsync</li>
+<li>每秒执行fsync</li>
+<li>每次查询时执行fsync。  </li>
+</ol>
+<p>使用fsync的默认策略，每秒写入性能仍然很好(使用后台线程执行fsync，并且当没有fsync正在执行时，主线程将努力执行写入)但是只会丢失一秒的写入  </p>
+</li>
+<li><p>AOF日志是仅追加日志(<code>append-only</code>)，因此没有磁盘寻址，在突然断电时也没有损坏问题。即使由于某种原因（磁盘已满或其他原因）日志在命令写到一半时停止，<code>redis-check-aof</code>工具也能够轻松修复它。</p>
+</li>
+<li><p>当AOF日志变得太大时，<code>Redis</code>可以在后台自动重写它。重写操作是绝对安全的，因为当<code>Redis</code>继续追加到旧文件时，将使用创建当前数据集所需的最小操作集生成一个完全新的文件，一旦第二个文件准备就绪，<code>Redis</code>将切换这两个文件并开始追加到新文件。</p>
+</li>
+<li><p>AOF以易于理解和分析的格式，一个接一个地记录所有操作日志。可以轻松导出AOF文件，例如，即使因为某个错误原因使用<code>FLUSHALL</code>命令清除了所有缓存数据，如果在此期间没有执行日志重写，你仍然可以恢复数据集:只需停止服务器、删除<code>AOF</code>日志中最新的命令(也就是<code>FLUSHALL</code>命令)，然后重新启动redis。</p>
+</li>
+</ul>
+<h3 id="AOF缺点"><a href="#AOF缺点" class="headerlink" title="AOF缺点"></a>AOF缺点</h3><ul>
+<li>相同数据集下,AOF文件通常大于同等效果的RDB文件</li>
+<li>根据确切的<code>fsync</code>策略，AOF可能比RDB慢。一般来说，<code>fsync</code>设置为每秒性能仍然非常高，并且在<code>fsync</code>禁用的情况下，即使在高负载下也应该与RDB一样快。尽管如此，RDB仍然能够提供关于最大延迟的更多保证，即使在写负载很大的情况下也是如此。</li>
+<li>在过去，遇到了极少特定命令中的罕见错误（例如，有一个涉及阻塞命令，如<code>BRPOPLPUSH</code>）导致生成的AOF在重新加载时不会重现完全相同的数据集。这个错误很少见，我们在测试套件中进行测试，自动创建随机复杂数据集并重新加载它们以检查一切正常，但RDB持久性几乎不可能出现这种错误。为了更清楚地说明这一点：<code>Redis AOF</code>以增量方式更新现有状态，就像<code>mysql</code>或<code>mongodb</code>那样，而<code>RDB</code>快照会一次又一次地从头创建所有内容，这在概念上更为健壮。但是，<ol>
+<li>应该注意的是，每次通过Redis重写AOF时，都会从数据集中包含的实际数据开始从头开始重新创建，与始终追加的AOF文件相比，可以更好地抵抗错误（或者重写一个旧的AOF而不是读取内存中的数据）。</li>
+<li>我们从未收到用户提供的关于在实际使用中检测到的AOF损坏的单一报告。  </li>
+</ol>
+</li>
+</ul>
+<h3 id="RDB和AOF选择"><a href="#RDB和AOF选择" class="headerlink" title="RDB和AOF选择"></a>RDB和AOF选择</h3><p>一般来说，如果希望达到与<code>PostgreSQL</code>提供的数据安全性相当的安全性程度，则应使用两种持久性方法。  </p>
+<p>如果你非常关心你的数据，但是在发生灾难的情况下允许有几分钟的数据丢失，那么可以单独使用RDB。  </p>
+<p>有许多用户单独使用<code>AOF</code>,我们并不鼓励这么做,因为有一个不定期的RDB快照对于数据库备份、快速重启、以及如果AOF引擎出现错误时是一个非常好的选择.  </p>
+<p>基于上面这些原因，可能在长期计划中会统一<code>AOF</code>和<code>RDB</code>持久化模型.</p>
+<h3 id="快照"><a href="#快照" class="headerlink" title="快照"></a>快照</h3><p>Redis默认将数据集的快照保存在硬盘上的<code>dump.rdb</code>文件中.如果数据集中至少有<code>M</code>个键更改，可以配置redis每隔<code>N</code>秒保存一次数据集，或者可以手动的调用<strong>SAVE</strong>或<strong>BGSAVE</strong>命令。</p>
+<p>例如，如果至少更改了1000个键，此配置将使redis每60秒自动将数据集转储到磁盘：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">save 60 1000</span><br></pre></td></tr></table></figure>
+<p>这就是快照策略.</p>
+<h3 id="快照工作原理"><a href="#快照工作原理" class="headerlink" title="快照工作原理"></a>快照工作原理</h3><p>当Redis需要将数据集转储到磁盘时,会做以下事情:</p>
+<ul>
+<li><code>Redis</code>进行<a href="http://linux.die.net/man/2/fork"><code>forks</code></a>.这样就有了一个子进程和一个父进程</li>
+<li>子进程开始将数据集写入到一个临时的<code>RDB</code>文件</li>
+<li>当子进程完成写入新的<code>RDB</code>文件时，会用这个新的替换旧的</li>
+</ul>
+<p>这样使得Redis从<code>copy-on-write</code>语义中受益.</p>
+<h3 id="Append-only-文件"><a href="#Append-only-文件" class="headerlink" title="Append-only 文件"></a>Append-only 文件</h3><p>快照并不特别持久化.如果运行Redis的机器意外停止了,断电或者意外使用<code>kill -9</code>杀掉了实例，那么Redis中最近写的数据就可能丢失.虽然这对一些应用来说并不是问题，但是对于一些需要完全持久化的应用来说，redis可能不是一个好的选择.  </p>
+<p>对Redis来说,<code>Append-only</code>是一个可供选择的，完全持久化的策略.这个特性是Redis 1.1版本添加的,可以打开以下配置开启<code>AOF</code>：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
+<p>这之后，Redis每接收到一个会改变数据的命令就会把该命令追加记录到AOF文件中，当重启Redis时，会重放AOF文件来重建之前的状态.</p>
+<h3 id="日志重写"><a href="#日志重写" class="headerlink" title="日志重写"></a>日志重写</h3><p>正如你想的那样，AOF文件会随着写操作执行的越来越多变得越来越大。例如，如果你对一个计数器进行递增100次的操作,在Redis中最后只会有一个Key以及它对应的递增结果值存在，但是在AOF文件中却会有100条递增操作的记录.其中99条对于重建当前状态是没有意义的.  </p>
+<p>因此Redis有一个有趣的特性:它可以在后台重写AOF文件而不需要中断对连接客户端的服务。当你发出<strong>BGREWRITEAOF</strong>命令时，Redis将写入重建内存中当前数据集所需的最短命令序列到一个新的AOF文件中.如果你使用Redis 2.2版本的AOF，那么需要手动时不时的运行<strong>BGREWRITEAOF</strong>命令，Redis2.4版本之后会自动触发重写.</p>
+<h3 id="Append-only文件的持久化能力"><a href="#Append-only文件的持久化能力" class="headerlink" title="Append-only文件的持久化能力"></a>Append-only文件的持久化能力</h3><p> 你可以配置Redis在磁盘上同步数据的次数.一般有三种选择:</p>
+<ul>
+<li><p>**始终同步(<code>appendfsync always</code>)**：每次将新的命令添加到AOF时就进行<a href="http://linux.die.net/man/2/fsync"><code>fsync</code></a>,这样会非常慢但是非常安全</p>
+</li>
+<li><p><strong>每秒钟同步</strong>: 每秒钟进行同步速度足够快(和快照方式差不多),在发生灾难时可能丢失1秒钟的数据.</p>
+</li>
+<li><p><strong>不同步</strong>: 永远不进行同步到磁盘，只将数据放在操作系统的内存中。是更快但是更不安全的方法。通常情况下，如果使用这种配置，Linux会每隔30秒刷新一次数据，但这取决于内核的精确调整。  </p>
+<p>建议每秒钟进行<code>fsync</code>操作，这也是默认的策略.这样即快速也足够安全.<code>always</code>策略在实践中非常缓慢，但它支持组提交，因此如果存在多个并行写入，<code>Redis</code>会尝试执行单个<code>fsync</code>操作。</p>
+</li>
+</ul>
+<h3 id="AOF文件被截断情况处理"><a href="#AOF文件被截断情况处理" class="headerlink" title="AOF文件被截断情况处理"></a>AOF文件被截断情况处理</h3><p>有可能服务器在写入AOF文件时崩溃了，或者存储AOF文件的卷空间满了,发生这种情况时，AOF仍然包含了数据集在给定时间点版本的一致数据（使用默认的<code>AOF fsync</code>策略时，该数据集的时间点版本可能最长为一秒钟），但AOF中的最后一个命令可能会被截断(也就是正在写入命令时服务器崩溃了或者磁盘满了,该命令只写了一半的情况)。最新主要版本的Redis无论如何都可以加载该AOF，只需丢弃文件中最后一个格式不正确的命令即可。在这种情况下，服务器将发出如下日志：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">* Reading RDB preamble from AOF file...</span><br><span class="line">* Reading the remaining AOF tail...</span><br><span class="line"># !!! Warning: short read while loading the AOF file !!!</span><br><span class="line"># !!! Truncating the AOF at offset 439 !!!</span><br><span class="line"># AOF loaded anyway because aof-load-truncated is enabled</span><br></pre></td></tr></table></figure>
+<p>当然如果有需要的话,你也可以更改这个默认配置，使得Redis在这种情况下立即停止重启,Redis的默认配置是为了即使最后一个命令不正确，也可以忽略它来保证重启后立即可用.  </p>
+<p>老版本的<code>Redis</code>可能不会自动恢复,可以采用以下步骤:  </p>
+<ul>
+<li>复制备份AOF文件</li>
+<li>在Redis附带的<code>redis-check-aof</code>工具修复原始文件:  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ redis-check-aof --fix</span><br></pre></td></tr></table></figure></li>
+<li>可以使用<code>diff -u</code>来检查两个文件的不同之处</li>
+<li>使用修复后的AOF文件重启Redis</li>
+</ul>
+<h3 id="AOF文件损坏情况处理"><a href="#AOF文件损坏情况处理" class="headerlink" title="AOF文件损坏情况处理"></a>AOF文件损坏情况处理</h3><p>如果AOF文件不只是被截断，而是被中间的无效字节序列损坏，那么事情就更复杂了。Redis将在启动时报告并中止：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">* Reading the remaining AOF tail...</span><br><span class="line"># Bad file format reading the append only file: make a backup of your AOF file, then use .&#x2F;redis-check-aof --fix &lt;filename&gt;</span><br></pre></td></tr></table></figure>
+<p>最好的做法是运行<code>redis-check-aof</code>程序，开始不要使用<code>--fix</code>选项，先找到问题所在，跳到文件中给定的偏移量，查看是否可以手动修复文件：<code>AOF</code>使用与<code>Redis</code>协议相同的格式，并且很容易手动修复。此外，可以用<code>redis-check-aof</code>为我们修复该文件，但在这种情况下，从无效部分到文件结尾的所有AOF部分可能会被丢弃，如果损坏恰好发生在文件的初始部分，则会导致大量数据丢失。  </p>
+<h3 id="AOF日志重写工作原理"><a href="#AOF日志重写工作原理" class="headerlink" title="AOF日志重写工作原理"></a>AOF日志重写工作原理</h3><p>日志重写使用了和快照一样的<code>copy-on-write</code>原理:  </p>
+<ul>
+<li><code>Redis forks</code>,这样就有一个子进程和一个父进程</li>
+<li>子进程开始在临时文件写入新的AOF</li>
+<li>父进程将所有新更改累积到内存缓冲区中（但同时它也将新更改写入旧的仅追加文件中，因此如果重写失败，也是安全的）。</li>
+<li>当子进程重写完成后，父进程会收到一个信号，并在子进程生成的文件末尾附加内存缓冲区(也就是把上一步累积的新的更改追加到子进程新写的AOF文件中)。</li>
+<li>Redis自动从旧的AOF切换至新的AOF文件</li>
+</ul>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><ul>
+<li><a href="https://redis.io/topics/persistence">Redis Persistence</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>redis</category>
+      </categories>
+      <tags>
+        <tag>redis</tag>
+        <tag>cache</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Centos7 VirtualBox桥接网络设置</title>
+    <url>/linux/centos7-Bridged-Network/</url>
+    <content><![CDATA[<p>我们在安装虚拟机时，一般有三种网络方式可以选择：</p>
+<ul>
+<li>NAT 模式</li>
+<li>主机模式</li>
+<li>桥接模式</li>
+</ul>
+<p>为了让我们的虚拟机以类似独立的方式访问网络,我们需要配置为桥接模式。</p>
+<a id="more"></a>
+<p>，这里我是用的是VirtualBox安装的虚拟机,因此通过它来配置:</p>
+<ul>
+<li><p>在设置中将NAT网络改为桥接:<br><img src="bridged-virtualbox.png" alt="images"></p>
+</li>
+<li><p>重启虚拟机</p>
+</li>
+<li><p>通过<code>ip addr</code>命令获取虚拟机网卡和mac地址</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ip addr</span><br></pre></td></tr></table></figure>
+<p><img src="ip-addr.png" alt="image"><br>这里,<code>enp0s3</code>是网卡,蓝色覆盖的就是虚拟机的mac地址，这个需要记下来,下面配置需要.</p>
+</li>
+<li><p>修改<code>/etc/sysconfig/network-scripts/ifcfg-enp0s3</code>，与上面的网卡名称相对应.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">HWADDR&#x3D;**:**:**:**:**:** </span><br><span class="line">TYPE&#x3D;&quot;Ethernet&quot;</span><br><span class="line">PROXY_METHOD&#x3D;&quot;none&quot;</span><br><span class="line">BROWSER_ONLY&#x3D;&quot;no&quot;</span><br><span class="line">BOOTPROTO&#x3D;&quot;static&quot;</span><br><span class="line">DEFROUTE&#x3D;&quot;yes&quot;</span><br><span class="line">IPV4_FAILURE_FATAL&#x3D;&quot;no&quot;</span><br><span class="line">IPV6INIT&#x3D;&quot;yes&quot;</span><br><span class="line">IPV6_AUTOCONF&#x3D;&quot;yes&quot;</span><br><span class="line">IPV6_DEFROUTE&#x3D;&quot;yes&quot;</span><br><span class="line">IPV6_FAILURE_FATAL&#x3D;&quot;no&quot;</span><br><span class="line">IPV6_ADDR_GEN_MODE&#x3D;&quot;stable-privacy&quot;</span><br><span class="line">NAME&#x3D;&quot;enp0s3&quot;</span><br><span class="line">UUID&#x3D;&quot;****************************&quot;</span><br><span class="line">DEVICE&#x3D;&quot;enp0s3&quot;</span><br><span class="line">ONBOOT&#x3D;&quot;yes&quot;</span><br><span class="line">IPADDR&#x3D;**.**.**.**</span><br><span class="line">NETMASK&#x3D;255.255.255.0</span><br><span class="line">GATEWAY&#x3D;**.**.**.**</span><br><span class="line">DNS1&#x3D;**.**.**.**</span><br><span class="line">DNS2&#x3D;**.**.**.**</span><br></pre></td></tr></table></figure>
+<p>以下是几个需要修改的地方:</p>
+<blockquote>
+<p><strong>HWADDR</strong>: mac地址,也就是上面我们通过<code>ip addr</code>得得到的地址，填入这里即可<br><strong>BOOTPROTO</strong>: 如果需要使用固定ip,那么就是<code>static</code>;如果使用动态ip，那么填<code>dhcp</code>,注意使用dhcp这种方式的话下面的IP地址,子网掩码,网关和DNS这些就不用配了,全部会自动获取.但是如果不支持dhcp方式的话,就需要手动指定,这里我采用的是静态ip<br><strong>ONBOOT</strong>：改为开机启动yes<br><strong>IPADDR</strong>：静态ip地址,自己分配<br><strong>NETMASK</strong>：子网掩码,和宿主机保持一致<br><strong>GATEWAY</strong>: 网关,和宿主机保持一致<br><strong>DNS1</strong>: 域名服务器1，和宿主机保持一致<br><strong>DNS2</strong>: 域名服务器2，和宿主机保持一致  </p>
+</blockquote>
+<p>以宿主机器windows系统为例,我们可以通过<code>控制面板-网络和Internet-网络连接-右 键属性-ipv4-属性</code>查看获取到对应的网关等信息:</p>
+<p><img src="ip-v4.png" alt="image"></p>
+</li>
+<li><p>修改完成后,重启网络服务</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">systemctl restart network</span><br></pre></td></tr></table></figure></li>
+<li><p>查看ip</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ip addr</span><br></pre></td></tr></table></figure></li>
+<li><p>ping一下看看</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ping www.baidu.com</span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>centos7</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>csapp中的一个数组拷贝例子</title>
+    <url>/csapp/csapp%E4%B8%AD%E7%9A%84%E4%B8%80%E4%B8%AA%E6%95%B0%E7%BB%84%E6%8B%B7%E8%B4%9D%E4%BE%8B%E5%AD%90/</url>
+    <content><![CDATA[<p>在csapp中有一个数组拷贝的例子,有两个相同长度的二维数组a,b，将a的值拷贝到b中对应位置；一种是按行拷贝,另一种是按列拷贝，比较二者性能，我用java做了简单的例子:</p>
+<h6 id="按行拷贝"><a href="#按行拷贝" class="headerlink" title="按行拷贝"></a>按行拷贝</h6><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span>  <span class="keyword">void</span>  <span class="title">copyij</span><span class="params">(<span class="keyword">int</span>[][] a,<span class="keyword">int</span>[][] b)</span></span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2048</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="number">2048</span>; j++) &#123;</span><br><span class="line">                b[i][j] = a[i][j];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h6 id="按列拷贝"><a href="#按列拷贝" class="headerlink" title="按列拷贝"></a>按列拷贝</h6><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span>  <span class="keyword">void</span>  <span class="title">copyji</span><span class="params">(<span class="keyword">int</span>[][] a,<span class="keyword">int</span>[][] b)</span></span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="number">2048</span>; j++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2048</span>; i++) &#123;</span><br><span class="line">                b[i][j] = a[i][j];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h6 id="简单测试"><a href="#简单测试" class="headerlink" title="简单测试"></a>简单测试</h6><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span>[][] a = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2048</span>][<span class="number">2048</span>];</span><br><span class="line">        <span class="keyword">int</span>[][] b = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2048</span>][<span class="number">2048</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2048</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="number">2048</span>; j++) &#123;</span><br><span class="line">                a[i][j] = i;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> start = System.nanoTime();</span><br><span class="line">        copyij(a,b);</span><br><span class="line">        <span class="comment">//copyji(a,b);</span></span><br><span class="line">        <span class="keyword">long</span> end = System.nanoTime();</span><br><span class="line"></span><br><span class="line">        System.out.println(end-start);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h6 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h6><p>发现结果果然如csapp上讲课老师说的，二者的运行时间差了一个数量级，按行拷贝比按列拷贝快了一个数量级。造成这个原因是内存的存储结构影响的，具体怎么影响还需要后续深入学习.</p>
+]]></content>
+      <categories>
+        <category>csapp</category>
+      </categories>
+      <tags>
+        <tag>csapp</tag>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>csapp作业练习第二章</title>
+    <url>/uncategorized/csapp%E4%BD%9C%E4%B8%9A%E7%BB%83%E4%B9%A0/</url>
+    <content><![CDATA[<h4 id="2-5-大小端问题"><a href="#2-5-大小端问题" class="headerlink" title="2.5 大小端问题:"></a>2.5 大小端问题:</h4><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">//show_bytes.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *byte_pointer;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">show_bytes</span><span class="params">(byte_pointer start,<span class="keyword">size_t</span> len)</span></span>&#123;</span><br><span class="line">     <span class="keyword">size_t</span> i;</span><br><span class="line">     <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;len;i++)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot; %.2x&quot;</span>,start[i]);</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">show_int</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</span><br><span class="line">  show_bytes((byte_pointer)&amp;x,<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">show_float</span><span class="params">(<span class="keyword">float</span> x)</span></span>&#123;</span><br><span class="line">   show_bytes((byte_pointer)&amp;x,<span class="keyword">sizeof</span>(<span class="keyword">float</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">show_pointer</span><span class="params">(<span class="keyword">void</span> *x)</span></span>&#123;</span><br><span class="line">   show_bytes((byte_pointer)&amp;x,<span class="keyword">sizeof</span>(<span class="keyword">void</span> *));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">int</span> val = <span class="number">12345</span>;</span><br><span class="line">   <span class="keyword">int</span> ival = val;</span><br><span class="line">   <span class="keyword">float</span> fval = (<span class="keyword">float</span>)ival;</span><br><span class="line">   <span class="keyword">int</span> *pval = &amp;ival;</span><br><span class="line">   show_int(ival);</span><br><span class="line">   show_float(fval);</span><br><span class="line">   show_pointer(pval);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> val = <span class="number">0x87654321</span>;</span><br><span class="line">byte_pointer valp = (byte_pointer)&amp;val;</span><br><span class="line">show_bytes(valp,<span class="number">1</span>); <span class="comment">/*A.*/</span></span><br><span class="line">show_bytes(valp,<span class="number">2</span>);<span class="comment">/*B.*/</span></span><br><span class="line">show_bytes(valp,<span class="number">3</span>);<span class="comment">/*C.*/</span></span><br></pre></td></tr></table></figure>
+<p>在小端和大端机器上分别调用的结果:  </p>
+<table>
+<thead>
+<tr>
+<th align="left">值</th>
+<th align="left">小端</th>
+<th align="left">大端</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">0x87654321</td>
+<td align="left">21 43 65 87</td>
+<td align="left">87 65 43 21</td>
+</tr>
+<tr>
+<td align="left">A</td>
+<td align="left">21</td>
+<td align="left">87</td>
+</tr>
+<tr>
+<td align="left">B</td>
+<td align="left">21 43</td>
+<td align="left">87 65</td>
+</tr>
+<tr>
+<td align="left">C</td>
+<td align="left">21 43 65</td>
+<td align="left">87 65 43</td>
+</tr>
+</tbody></table>
+<h4 id="2-6-正数与浮点数二进制位比较"><a href="#2-6-正数与浮点数二进制位比较" class="headerlink" title="2.6 正数与浮点数二进制位比较"></a>2.6 正数与浮点数二进制位比较</h4><table>
+<thead>
+<tr>
+<th align="left">值</th>
+<th align="left">十六进制</th>
+<th align="left">二进制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">3510593</td>
+<td align="left">0x00359141</td>
+<td align="left">00000000001<font color=red face=“黑体”>101011001000101000001</font></td>
+</tr>
+<tr>
+<td align="left">3510593.0</td>
+<td align="left">0x4a564504</td>
+<td align="left">&nbsp;&nbsp;&nbsp; 010010100 <font color=red face=“黑体”>101011001000101000001</font>00</td>
+</tr>
+<tr>
+<td align="left">整数中除了第一位的1其它都包含在浮点数的二进制中</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h4 id="2-7"><a href="#2-7" class="headerlink" title="2.7"></a>2.7</h4><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *s=<span class="string">&quot;abcdef&quot;</span>;</span><br><span class="line">show_bytes((byte_pointer)s,<span class="built_in">strlen</span>(s)); <span class="comment">//输出结果</span></span><br></pre></td></tr></table></figure>
+<p><code>注意字母&#39;a&#39;～‘z’的ASCII码为0x61～0x7A.在unix中运行man ascii可以查看ascii表.</code><br>输出为61 62 63 64 65 66 00其中00是字符串终止字节</p>
+<h4 id="2-8-位向量布尔运算及相关定理"><a href="#2-8-位向量布尔运算及相关定理" class="headerlink" title="2.8 位向量布尔运算及相关定理"></a>2.8 位向量布尔运算及相关定理</h4><table>
+<thead>
+<tr>
+<th align="left">运算</th>
+<th align="left">结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">a</td>
+<td align="left">[01101001]</td>
+</tr>
+<tr>
+<td align="left">b</td>
+<td align="left">[01010101]</td>
+</tr>
+<tr>
+<td align="left">~a</td>
+<td align="left">[10010110]</td>
+</tr>
+<tr>
+<td align="left">~b</td>
+<td align="left">[10101010]</td>
+</tr>
+<tr>
+<td align="left">a&amp;b</td>
+<td align="left">[01000001]</td>
+</tr>
+<tr>
+<td align="left">a&#124;b</td>
+<td align="left">[01111101]</td>
+</tr>
+<tr>
+<td align="left">a^b</td>
+<td align="left">[00111100]</td>
+</tr>
+<tr>
+<td align="left">注: 类似于乘法分配律,</td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<ul>
+<li>&amp;对|分配律: <code>a&amp;(b|c)=(a&amp;b)|(a&amp;c);  </code>  </li>
+<li>反过来，|对&amp;也具有分配律: <code>a|(b&amp;c)=(a|b)&amp;(a|c)</code></li>
+<li>对于任何a值,有:<code>a^a=0</code>;即使交换顺序也成立:<code>a^b^a=(a^a)^b=b</code></li>
+</ul>
+<h4 id="2-9-RGB三原色"><a href="#2-9-RGB三原色" class="headerlink" title="2.9 RGB三原色"></a>2.9 RGB三原色</h4><p>基于红(R),绿(G)，蓝(B)三种光源的打开(1)和关闭(0)可以创建以下8种不同颜色:  </p>
+<table>
+<thead>
+<tr>
+<th align="center">R</th>
+<th align="center">G</th>
+<th align="center">B</th>
+<th align="center">颜色</th>
+<th></th>
+<th align="center">R</th>
+<th align="center">G</th>
+<th align="center">B</th>
+<th align="center">颜色</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">黑色</td>
+<td></td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">红色</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">蓝色</td>
+<td></td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">红紫色</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">绿色</td>
+<td></td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">黄色</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">蓝绿色</td>
+<td></td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">白色</td>
+</tr>
+</tbody></table>
+<p>A.每种颜色的互补关系:<br><img src="%E4%B8%89%E5%8E%9F%E8%89%B2.png" alt="image"><br>B.对颜色进行布尔运算: </p>
+<ul>
+<li>蓝色|绿色 = 001|010 = 011= 蓝绿色</li>
+<li>黄色&amp;蓝绿色 = 110&amp;011 = 010 = 绿色</li>
+<li>红色^红紫色 = 100^101 = 001 = 蓝色</li>
+</ul>
+<h4 id="2-10-不使用临时变量的交换值"><a href="#2-10-不使用临时变量的交换值" class="headerlink" title="2.10 不使用临时变量的交换值"></a>2.10 不使用临时变量的交换值</h4><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">inplace_swap</span><span class="params">(<span class="keyword">int</span> *x,<span class="keyword">int</span> *y)</span></span>&#123;</span><br><span class="line">  *y = *x ^ *y; <span class="comment">/* Step 1*/</span></span><br><span class="line">  *x = *x ^ *y; <span class="comment">/* Step 2*/</span></span><br><span class="line">  *y = *x ^ *y; <span class="comment">/* Step 3*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据定理a^a=0,得到每一步骤的结果:  </p>
+<table>
+<thead>
+<tr>
+<th align="center">步骤</th>
+<th align="center">*x</th>
+<th align="center">*y</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">初始</td>
+<td align="center">a</td>
+<td align="center">b</td>
+</tr>
+<tr>
+<td align="center">第1步</td>
+<td align="center">a</td>
+<td align="center">a^b</td>
+</tr>
+<tr>
+<td align="center">第2步</td>
+<td align="center">a^(a^b)=b</td>
+<td align="center">a^b</td>
+</tr>
+<tr>
+<td align="center">第3步</td>
+<td align="center">b</td>
+<td align="center">b^(a^b)=a</td>
+</tr>
+</tbody></table>
+<p>这样就利用^实现了不引入第三个临时变量实现了两个变量的交换，这种交换方式在性能上并没有什么优势，仅仅是一种智力游戏.</p>
+<h4 id="2-11-利用inplace-swap函数实现数组两端依次对调"><a href="#2-11-利用inplace-swap函数实现数组两端依次对调" class="headerlink" title="2.11 利用inplace_swap函数实现数组两端依次对调"></a>2.11 利用inplace_swap函数实现数组两端依次对调</h4><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">reverse_array</span><span class="params">(<span class="keyword">int</span> a[],<span class="keyword">int</span> cnt)</span></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> first,last;</span><br><span class="line">  <span class="keyword">for</span>(first = <span class="number">0</span>,last = cnt<span class="number">-1</span>;</span><br><span class="line">      first &lt;= last;</span><br><span class="line">      first++,last--)&#123;</span><br><span class="line">        inplace_swap(&amp;a[first],&amp;a[last]);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面这个函数，对包含1,2,3,4元素的数组来说可以按预期那样变为4,3,2,1;但是，当一个包含1,2,3,4,5元素的数组使用该函数时却会看到5,4,0,2,1的结果.实际上，上面的函数对偶数项数组都能正确工作，但是对于奇数项的总会把中间项设置位0. </p>
+<ul>
+<li>A.对于一个长度为奇数的数组，长度cnt=2k+1,函数reverse_array最后一次循环中，变量first和last的值分别是什么? <code>first=last=k</code></li>
+<li>B.为什么这时候调用inplace_swap函数会将数组元素置为0? <code>因为&amp;a[k]^&amp;a[k]=0</code></li>
+<li>C.对reverse_array的代码做哪些改动即可解决该问题? <code>因为中间元素不需要交换，故把first&lt;=last条件改为first&lt;last即可</code>.</li>
+</ul>
+<h4 id="2-12-掩码运算"><a href="#2-12-掩码运算" class="headerlink" title="2.12 掩码运算"></a>2.12 掩码运算</h4><p>对于下面的值，写出C语言表达式，并且代码对于任何w≥8都能工作.我们给出0x87654321以及w=32时的表达式求值结果，以供参考:</p>
+<ul>
+<li>A.x的最低有效字节,其它位置均为0. [0x00000021] &nbsp;&nbsp;&nbsp;&nbsp;<code>x&amp;0xFF</code></li>
+<li>B.除了x的最低有效字节外,其它位置都取补.[0x789ABC21] &nbsp;&nbsp;&nbsp;&nbsp; <code>x^~0xFF</code></li>
+<li>C.x的最低有效字节全部设置为1，其它字节保持不变.[0x876543FF] &nbsp;&nbsp;&nbsp;&nbsp; <code>x|0xFF</code></li>
+</ul>
+<h4 id="2-13-bis-位设置-和bic-位清除-函数"><a href="#2-13-bis-位设置-和bic-位清除-函数" class="headerlink" title="2.13 bis(位设置)和bic(位清除)函数"></a>2.13 bis(位设置)和bic(位清除)函数</h4><p>这两种指令输入都是一个数据字x和一个掩码m,生成一个结果z,z是根据掩码m的位来设置x的位得到的.  </p>
+<ul>
+<li>bis：在m为1的每个位置上，将x对应的位设置为1</li>
+<li>bic：在m为1的每个位置上，将x对应的位设置为0</li>
+</ul>
+<p>现在，不使用任何其它C语言运算，实现|和^运算</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*bis和bic函数声明*/</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bis</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> m)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bic</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> m)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*使用bis和bic函数实现x|y运算*/</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bool_or</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> result = bis(x,y);</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*使用bis和bic函数实现x^y运算*/</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bool_xor</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> result = bis(bic(x,y),bic(y,x));</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>注:bis运算等价于布尔or；bic(x,m)等价于x&amp;~m,即实现x对应位为1且m对应位为0时，该位等于1.   由此，我们可以调用一次bis来实现|运算。对于实现^运算则需要使用以下性质:     x^y=(x&amp;~y)|(~x&amp;y) 可以推导:x^y=bic(x,y)|bic(y,x)=bis(bic(x,y),bic(y,x))</code></p>
+<h4 id="2-14-逻辑运算与位级运算比较"><a href="#2-14-逻辑运算与位级运算比较" class="headerlink" title="2.14 逻辑运算与位级运算比较"></a>2.14 逻辑运算与位级运算比较</h4><p>假设x和y的值分别是0x66和0x39，填写下表:  </p>
+<table>
+<thead>
+<tr>
+<th align="left">值</th>
+<th align="left">二进制</th>
+<th align="left">~</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">0x66</td>
+<td align="left">0110 0110</td>
+<td align="left">1001 1001</td>
+</tr>
+<tr>
+<td align="left">0x39</td>
+<td align="left">0011 1001</td>
+<td align="left">1100 0110</td>
+</tr>
+</tbody></table>
+<p>|  表达式   |  值 ||  表达式   |  值 |<br>| :– | :–|:–| :–|<br>| x &amp; y  | 0010 0000=0x20 | | x &amp;&amp; y|0x01|<br>| x &#124; y  | 0111 1111=0x7F||x &#124;&#124;y|0x01|<br>| <del>x &#124; ~y  | 1101 1111=0xDF||</del>x &#124;&#124;~y|0x00|<br>| ~x &amp; !y  | 0000 0000=0x00||x &amp;&amp; ~y|0x01|</p>
+<p><code>注意!是逻辑运算符，因此!y=0x00</code></p>
+<h4 id="2-15"><a href="#2-15" class="headerlink" title="2.15"></a>2.15</h4><p>只用位级和逻辑运算，编写一个C表达式，它等价于x==y.换句话说，当x和y相等时它将返回1,否则返回0. &nbsp;&nbsp;&nbsp;&nbsp;<code>!(x^y)</code></p>
+<h4 id="2-16-位移运算"><a href="#2-16-位移运算" class="headerlink" title="2.16 位移运算"></a>2.16 位移运算</h4><table><tr><td colspan=2 style="border:1px solid;text-align:center">x</td><td colspan=2 style="border:1px solid;text-align:center">x<<3</td><td colspan=2 style="border:1px solid;text-align:center">x>>2(逻辑的)</td><td colspan=2 style="border:1px solid;text-align:center">x>>2(算术的)</td></tr><tr><td style="border:1px solid;text-align:center">十六进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">十六进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">十六进制</td><td style="border:1px solid;text-align:center">二进制</td><td style="border:1px solid;text-align:center">十六进制</td></tr><tr><td style="border-left:1px solid;border-right:1px solid;">0xC3</td><td style="border-right:1px solid;">1100 0011</td><td style="border-right:1px solid;">0001 1000</td><td style="border-right:1px solid;">0x18</td><td style="border-right:1px solid;">0011 0000</td><td style="border-right:1px solid;">0x30</td><td style="border-right:1px solid;">1111 0000</td><td style="border-right:1px solid;">0xF0</td></tr><tr><td style="border-left:1px solid;border-right:1px solid;">0x75</td><td style="border-right:1px solid;">0111 0101</td><td style="border-right:1px solid;">1010 1000</td><td style="border-right:1px solid;">0xA8</td><td style="border-right:1px solid;">0001 1101</td><td style="border-right:1px solid;">0x1D</td><td style="border-right:1px solid;">0001 1101</td><td style="border-right:1px solid;">0x1D</td></tr><tr><td style="border-left:1px solid;border-right:1px solid;">0x87</td><td style="border-right:1px solid;">1000 0111</td><td style="border-right:1px solid;">0011 1000</td><td style="border-right:1px solid;">0x38</td><td style="border-right:1px solid;">0010 0001</td><td style="border-right:1px solid;">0x21</td><td style="border-right:1px solid;">1110 0001</td><td style="border-right:1px solid;">0xE1</td></tr><tr><td style="border-bottom:1px solid;border-left:1px solid;border-right:1px solid;">0x66</td><td style="border-bottom:1px solid;border-right:1px solid;">0110 0110</td><td style="border-bottom:1px solid;border-right:1px solid;">0011 0000</td><td style="border-bottom:1px solid;border-right:1px solid;">0x30</td><td style="border-bottom:1px solid;border-right:1px solid;">0001 1001</td><td style="border-bottom:1px solid;border-right:1px solid;">0x19</td><td style="border-bottom:1px solid;border-right:1px solid;">00001 1001</td><td style="border-bottom:1px solid;border-right:1px solid;">0x19</td></tr></table>
+#### 2.17 无符号数、有符号数转换
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML">
+</script>
+ <style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:center}
+.tg .tg-nb2d{font-size:100%;border-color:inherit;text-align:center;vertical-align:middle}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:middle}
+.tg .tg-0pky{border-color:inherit;text-align:center;vertical-align:middle}
+.tg .tg-0lax{text-align:center;vertical-align:middle}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-0pky" colspan="2">$\vec{x}$</th>
+    <th class="tg-nb2d" rowspan="2">$B2U_{4}(\vec{x})$</th>
+    <th class="tg-c3ow" rowspan="2">$B2T_{4}(\vec{x})$</th>
+  </tr>
+  <tr>
+    <td class="tg-0pky">十六进制</td>
+    <td class="tg-0pky">二进制</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">0xE</td>
+    <td class="tg-0pky">[1110]</td>
+    <td class="tg-0pky">$2^3+2^2+2^1=14$</td>
+    <td class="tg-0pky">$-2^3+2^2+2^1=-2$</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">0x0</td>
+    <td class="tg-0pky">[0000]</td>
+    <td class="tg-0pky">0</td>
+    <td class="tg-0pky">0</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">0x5</td>
+    <td class="tg-0lax">[0101]</td>
+    <td class="tg-0lax">$2^2+2^1=5$</td>
+    <td class="tg-0lax">5</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">0x8</td>
+    <td class="tg-0lax">[1000]</td>
+    <td class="tg-0lax">$2^3=8$</td>
+    <td class="tg-0lax">$-2^3=-8$</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">0xD</td>
+    <td class="tg-0lax">[1101]</td>
+    <td class="tg-0lax">$2^3+2^2+2^0=13$</td>
+    <td class="tg-0lax">$-2^3+2^2+2^0=-3$</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">0xF</td>
+    <td class="tg-0lax">[1111]</td>
+    <td class="tg-0lax">$2^3+2^2+2^1+2^0=15$</td>
+    <td class="tg-0lax">$-2^3+2^2+2^1+2^0=-1$</td>
+  </tr>
+</table>
+
+#### 2.19 有符号数转无符号数
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-s6z2{text-align:center}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-s6z2">x</th>
+    <th class="tg-s6z2">$T2U_{4}(x)$</th>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-8</td>
+    <td class="tg-s6z2">8</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-3</td>
+    <td class="tg-s6z2">13</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2</td>
+    <td class="tg-s6z2">14</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-1</td>
+    <td class="tg-s6z2">15</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">0</td>
+    <td class="tg-s6z2">0</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">5</td>
+    <td class="tg-s6z2">5</td>
+  </tr>
+</table>
+原理: 补码转无符号数:  
+对满足$TMin_{w} \leqslant x \leqslant TMax_{w}$的x有:
+$$T2U_{w}(x)= \left\{\begin{matrix}
+ & x + 2^{w},x< 0 & \\ 
+ & x,x\geqslant 0 & 
+\end{matrix}\right. $$
+
+#### 2.20 T2U公式的运用
+
+<p>$x=-8,T2U_{4}(-8)=-8+2^{4}=-8+16=8$</p>
+<p>$x=-3,T2U_{4}(-3)=-3+2^{4}=-3+16=13$</p>
+<p>$x=-2,T2U_{4}(-2)=-2+2^{4}=-2+16=14$</p>
+<p>$x=-1,T2U_{4}(-1)=-1+2^{4}=-1+16=15$</p>
+<p>$x=0 \geqslant 0,T2U_{4}(0)=0$</p>
+<p>$x=5 \geqslant 0,T2U_{4}(5)=5$</p>
+
+#### 2.21 无符号数和有符号数的类型转换和关系运算
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-s6z2{text-align:center}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-s6z2">表达式</th>
+    <th class="tg-s6z2">类型</th>
+    <th class="tg-baqh">求值</th>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2147483647-1 == 2147483648U</td>
+    <td class="tg-s6z2">无符号数</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2147483647-1 &lt;&nbsp;&nbsp;2147483647</td>
+    <td class="tg-s6z2">有符号数</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2147483647-1U &lt; 2147483647</td>
+    <td class="tg-s6z2">无符号数</td>
+    <td class="tg-baqh">0</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2147483647-1 &lt; -2147483647</td>
+    <td class="tg-s6z2">有符号数</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">-2147483647-1U &lt; -2147483647</td>
+    <td class="tg-s6z2">无符号数</td>
+    <td class="tg-baqh">1</td>
+  </tr>
+</table>
+<small>注:C语言运算中,如果一个运算数是无符号，另一个是有符号数，那么会隐式的将有符号数转为无符号数再进行运算，另外，$-2147483647-1=TMin_{32};2147483648=2^{31}$</small>  
+<br><br/>
+<p>①-2147483647-1 == 2147483648U: 因为2147483648U是无符号数,所以会将-2147483647-1转为无符号数:$T2U_{32}(-2147483647-1)=T2U_{32}(TMin_{32})=TMax_{32}+1=2^{31}-1+1=2^{31}$,所以二者相等.</p>
+<p>②$-2147483647-1 &lt; 2147483647$:两个都是有符号数，正常比较</p>
+<p>③$-2147483647-1U &lt; 2147483647$:在-2147483647-1U中,1U是无符号数，故-2147483647会转为无符号数,$T2U_{32}(-2147483647)=-2147483647+2^{32}=-2^{31}+1+2^{32}=2^{31}+1$,所以$-2147483647-1U=2^{31}+1-1=2^{31}$,其次$T2U(2147483647)=2^{31}-1$,因此这里运算结果为0</p>
+<p>④-2147483647-1 &lt; -2147483647:两个都是有符号数,正常比较</p>
+<p>⑤-2147483647-1U &lt; -2147483647: 根据③可知左边转为无符号数为$2^{31}$，右边$T2U(-2147483647)=-2^{31}+1+2^{32}=2^{31}+1$,所以小于成立 </p>
+
+
+
+]]></content>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/uncategorized/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/deployment.html">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>java使用maven打包为可执行的jar包</title>
+    <url>/uncategorized/java-maven-excution-jar/</url>
+    <content><![CDATA[<p>一般使用<code>maven-assembly-plugin</code>插件即可</p>
+<a id="more"></a>
+<figure class="highlight plain"><figcaption><span>pom.xml</span></figcaption><table><tr><td class="code"><pre><span class="line">    ....</span><br><span class="line">    &lt;build&gt;</span><br><span class="line">        &lt;plugins&gt;</span><br><span class="line">            &lt;plugin&gt;</span><br><span class="line">                &lt;groupId&gt;org.apache.maven.plugins&lt;&#x2F;groupId&gt;</span><br><span class="line">                &lt;artifactId&gt;maven-assembly-plugin&lt;&#x2F;artifactId&gt;</span><br><span class="line">                &lt;version&gt;2.4&lt;&#x2F;version&gt;</span><br><span class="line">                &lt;configuration&gt;</span><br><span class="line">                    &lt;descriptorRefs&gt;</span><br><span class="line">                        &lt;descriptorRef&gt;jar-with-dependencies&lt;&#x2F;descriptorRef&gt;</span><br><span class="line">                    &lt;&#x2F;descriptorRefs&gt;</span><br><span class="line">                    &lt;archive&gt;</span><br><span class="line">                        &lt;manifest&gt;</span><br><span class="line">                           &lt;!--主类入口--&gt; </span><br><span class="line">                          &lt;mainClass&gt;com.example.ExcelExport&lt;&#x2F;mainClass&gt;</span><br><span class="line">                        &lt;&#x2F;manifest&gt;</span><br><span class="line">                    &lt;&#x2F;archive&gt;</span><br><span class="line">                &lt;&#x2F;configuration&gt;</span><br><span class="line">                &lt;executions&gt;</span><br><span class="line">                    &lt;execution&gt;</span><br><span class="line">                        &lt;phase&gt;package&lt;&#x2F;phase&gt;</span><br><span class="line">                        &lt;goals&gt;</span><br><span class="line">                            &lt;goal&gt;single&lt;&#x2F;goal&gt;</span><br><span class="line">                        &lt;&#x2F;goals&gt;</span><br><span class="line">                    &lt;&#x2F;execution&gt;</span><br><span class="line">                &lt;&#x2F;executions&gt;</span><br><span class="line">            &lt;&#x2F;plugin&gt;</span><br><span class="line">            &lt;plugin&gt;</span><br><span class="line">                &lt;groupId&gt;org.apache.maven.plugins&lt;&#x2F;groupId&gt;</span><br><span class="line">                &lt;artifactId&gt;maven-compiler-plugin&lt;&#x2F;artifactId&gt;</span><br><span class="line">                &lt;version&gt;3.1&lt;&#x2F;version&gt;</span><br><span class="line">                &lt;configuration&gt;</span><br><span class="line">                    &lt;source&gt;1.8&lt;&#x2F;source&gt; &lt;!-- 源代码使用的JDK版本 --&gt;</span><br><span class="line">                    &lt;target&gt;1.8&lt;&#x2F;target&gt; &lt;!-- 需要生成的目标class文件的编译版本 --&gt;</span><br><span class="line">                    &lt;encoding&gt;UTF-8&lt;&#x2F;encoding&gt;&lt;!-- 字符集编码 --&gt;</span><br><span class="line">                &lt;&#x2F;configuration&gt;</span><br><span class="line">            &lt;&#x2F;plugin&gt;</span><br><span class="line">        &lt;&#x2F;plugins&gt;</span><br><span class="line">    &lt;&#x2F;build&gt;</span><br><span class="line">&lt;&#x2F;project&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这样，当我们使用<code>mvn clean package</code>打包时，会在target目录下生成两个jar包:<br><code>**.jar</code>和<code>***-jar-with-dependencies.jar</code>，前者是不含依赖的包，不能直接运行,后者是可直接执行的jar包,也可以直接使用<code>mvn clean compile assembly:single</code>命令只生成可执行的jar包.</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>java.util.concurrent.Executor</title>
+    <url>/java%E5%B9%B6%E5%8F%91/java%E5%B9%B6%E5%8F%91%E5%8C%85/</url>
+    <content><![CDATA[<h2 id="java-并发包-Executor-学习"><a href="#java-并发包-Executor-学习" class="headerlink" title="java 并发包 Executor 学习"></a>java 并发包 Executor 学习</h2><h4 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* .....</span></span><br><span class="line"><span class="comment"> * @since 1.5</span></span><br><span class="line"><span class="comment"> * @author Doug Lea</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Executor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Executes the given command at some time in the future.  The command</span></span><br><span class="line"><span class="comment">     * may execute in a new thread, in a pooled thread, or in the calling</span></span><br><span class="line"><span class="comment">     * thread, at the discretion of the &#123;<span class="doctag">@code</span> Executor&#125; implementation.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> command the runnable task</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> RejectedExecutionException if this task cannot be</span></span><br><span class="line"><span class="comment">     * accepted for execution</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> NullPointerException if command is null</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Executor</code>是一个接口，表示一系列可以用来执行已提交任务(<code>Runnable Tasks</code>)的对象.<br>它的源码很简单，就只有一个<code>void execute(Runnable command);</code>接口方法.<br><code>Executor</code>接口提供了一种将任务提交(<code>submit</code>)与任务如何运行的机制解耦的方式，包括线程使用，调度等细节。<br><code>Executor</code>通常用来代替传统的显示的创建线程，例如，之前我们需要在一个新线程中执行任务,我们一般这样写:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;).start();</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>简单来说就是<code>new Thread(new RunnableTask()).start()</code>这种模板方式。<br>使用<code>Executor</code>来创建任务，我们可以用下面的方式:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Executor executor = anExecutor <span class="comment">//一个Executor的具体实现</span></span><br><span class="line">executor.execute(<span class="keyword">new</span> RunnableTask1());</span><br><span class="line">executor.execute(<span class="keyword">new</span> RunnableTask2());</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，使用<code>Executor</code>屏蔽掉了显示的创建线程<code>new Thread(...)</code><br>但是，<code>Executor</code>接口并没有严格要求执行必须是异步的，也就是说任务的执行可以由当前调用线程执行或者新创建线程执行。<br>例如，我们如果要在当前线程执行任务，我们可以定义以下<code>Executor</code>实现:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DirectExecutor</span> <span class="keyword">implements</span> <span class="title">Executor</span></span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable r)</span></span>&#123;</span><br><span class="line">     r.run();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样，我们就可以直接在当前线程执行任务:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Executor executor = <span class="keyword">new</span> DirectExecutor();</span><br><span class="line">executor.execute(()-&gt;System.out.println(<span class="string">&quot;当前线程执行&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<p>但是，更一般的情况是我们会在一个新线程中去执行任务，例如:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreadPerTaskExecutor</span> <span class="keyword">implements</span> <span class="title">Executor</span></span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable r)</span></span>&#123;</span><br><span class="line">     <span class="keyword">new</span> Thread(r).start();</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样，我们就为每一个任务都新建线程去执行。<br>许多<code>Executor</code>实现对任务如何以及何时调度施加了一些限制。例如在下面的<code>SerialExecutor</code>中，我们把队列中的任务按序丢给另外一个 executor 去执行，相当于是一个组合的执行器.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SerialExecutor</span> <span class="keyword">implements</span> <span class="title">Executor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Queue&lt;Runnable&gt; tasks = <span class="keyword">new</span> ArrayDeque&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Executor executor;</span><br><span class="line"></span><br><span class="line">    Runnable active;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SerialExecutor</span><span class="params">(Executor executor)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.executor = executor;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(<span class="keyword">final</span> Runnable r)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//向任务队列中添加任务</span></span><br><span class="line">        tasks.offer(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    r.run();</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    scheduleNext();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">//如果当前没有正在执行的任务，那么调度执行下一个任务</span></span><br><span class="line">        <span class="keyword">if</span> (active == <span class="keyword">null</span>) &#123;</span><br><span class="line">            scheduleNext();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 调度执行下一个任务</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">scheduleNext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> ((active = tasks.poll()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            executor.execute(active);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以简单测试一下:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SerialExecutorTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Executor serialExecutor = <span class="keyword">new</span> SerialExecutor(<span class="keyword">new</span> DirectExecutor());</span><br><span class="line">        <span class="comment">//我们添加10个任务来执行</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">            serialExecutor.execute(<span class="keyword">new</span> TaskRunnable(i, i + <span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">TaskRunnable</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//任务ID</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> taskId;</span><br><span class="line">        <span class="comment">//模拟的任务执行时间秒数</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> seconds;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">TaskRunnable</span><span class="params">(<span class="keyword">int</span> taskId, <span class="keyword">int</span> seconds)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.taskId = taskId;</span><br><span class="line">            <span class="keyword">this</span>.seconds = seconds;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">//模拟任务执行时间</span></span><br><span class="line">                TimeUnit.SECONDS.sleep(seconds);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            System.out.println(<span class="string">&quot;任务[&quot;</span> + taskId + <span class="string">&quot;]执行完毕,耗时:&quot;</span> + seconds + <span class="string">&quot;秒&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以在控制台看到，任务按预期的调度执行了:</p>
+<blockquote>
+<p>任务[0]执行完毕,耗时:1 秒<br>任务[1]执行完毕,耗时:2 秒<br>任务[2]执行完毕,耗时:3 秒<br>任务[3]执行完毕,耗时:4 秒<br>任务[4]执行完毕,耗时:5 秒<br>任务[5]执行完毕,耗时:6 秒<br>任务[6]执行完毕,耗时:7 秒<br>任务[7]执行完毕,耗时:8 秒<br>任务[8]执行完毕,耗时:9 秒<br>任务[9]执行完毕,耗时:10 秒</p>
+</blockquote>
+<h4 id="内存一致性影响"><a href="#内存一致性影响" class="headerlink" title="内存一致性影响"></a>内存一致性影响</h4><p>在 javadoc 中关于<code>Executor</code>的内存一致性说明:</p>
+<blockquote><p>Memory consistency effects: Actions in a thread prior to submitting a Runnable object to an Executor happen-before its execution begins, perhaps in another thread.</p>
+<footer><strong>https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html</strong></footer></blockquote>
+
+<p>理解这句话有点难，举个例子来说:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MemoryTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> age;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.age = age;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Person p = <span class="keyword">new</span> Person();</span><br><span class="line">        Executor executor = Executors.newFixedThreadPool(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">        Runnable task2 = <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;任务2执行结果:&quot;</span> + p.getAge());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        Runnable task1 = <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                p.setAge(<span class="number">20</span>);</span><br><span class="line">                <span class="comment">//任务1中提交任务2</span></span><br><span class="line">                System.out.println(<span class="string">&quot;任务1执行完成..开始执行任务2....&quot;</span>);</span><br><span class="line">                executor.execute(task2);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        executor.execute(task1);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在上面这个例子中，task1 提交了另一个任务 task2，在 task1 提交 task2 之前执行的任何动作对 task2 的执行都满足于 happen-before 关系，因此在 task2 执行时 person 的 age 值是 20.<br>稍微改造下:  </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MemoryTest2</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> age;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.age = age;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Person p = <span class="keyword">new</span> Person();</span><br><span class="line">        Executor executor = Executors.newFixedThreadPool(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">        Runnable task2 = <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;任务2执行结果:&quot;</span> + p.getAge());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        Runnable task1 = <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="comment">//任务1中提交任务2</span></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">//模拟执行时间，方便观察</span></span><br><span class="line">                    TimeUnit.SECONDS.sleep(<span class="number">3</span>);</span><br><span class="line">                    p.setAge(<span class="number">20</span>);</span><br><span class="line">                    System.out.println(<span class="string">&quot;任务1执行完成.....&quot;</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        executor.execute(task1); <span class="comment">//①</span></span><br><span class="line">        executor.execute(task2); <span class="comment">//②</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这个例子中，task1 和 task2 是独立提交执行的(①-②)，因此不存在 happen-before 关系，因此在 task2 中获取 age 可能是 0 或者 20，这取决于 task1 中 setAge 和 task2 中 getAge 谁先执行.</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>在<code>java.util.concurrent</code>包中，提供了<code>Executor</code>的实现<code>ExecutorService</code>,这是一个更广泛的接口。<code>ThreadPoolExecutor</code>提供了一个可扩展的线程池实现。<code>Executors</code>为这些类提供了方便的工厂方法。</p>
+]]></content>
+      <categories>
+        <category>java并发</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>concurrency</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Centos7开放端口</title>
+    <url>/linux/open-port-on-Centos7/</url>
+    <content><![CDATA[<p>Centos7默认使用<code>firewalld</code>作为防火墙,如果需要开放某些端口，有以下步骤，注意下面都是使用root用户进行操作:</p>
+<ul>
+<li>通过<code>firewall-cmd</code>命令添加需要开放的端口,例如我们部署<code>ElasticSearch</code>时需要开放9200端口<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">firewall-cmd --zone&#x3D;public --add-port&#x3D;9200&#x2F;tcp --permanent</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>–zone 作用域<br>–add-port=9200/tcp 添加需要开放的端口,格式是<code>端口/协议</code><br>–permanent 永久生效</p>
+</blockquote>
+</li>
+</ul>
+<p>基本上所有的linux工具命令都可以通过<code>man 工具</code>查看文档,例如查看<code>firewall-cmd</code>的文档就是<code>man firewall-cmd</code></p>
+<a id="more"></a>
+<ul>
+<li>添加好要开放的端口后，需要重启防火墙:<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">systemctl restart firewalld</span><br></pre></td></tr></table></figure></li>
+<li>查看已经开放的端口列表:<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">firewall-cmd --list-ports</span><br></pre></td></tr></table></figure></li>
+<li>关闭开放的端口<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">firewall-cmd --zone&#x3D;public --remove-port&#x3D;9200&#x2F;tcp --permanent</span><br></pre></td></tr></table></figure></li>
+<li>查看监听的端口<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">netstat -lntp</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如果安装的是<code>Centos7 Minimal</code>版本的话,需要安装<code>net-tools</code>才能使用  <code>netstat</code>命令：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum install net-tools</span><br></pre></td></tr></table></figure></li>
+<li>查看占用某个端口的进程<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">netstat -lnp|grep 9200</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>centos7</tag>
+        <tag>firewalld</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SpringBoot redis-cache</title>
+    <url>/SpringBoot/pringBoot-redis-cache/</url>
+    <content><![CDATA[<h4 id="redis统一配置"><a href="#redis统一配置" class="headerlink" title="redis统一配置"></a>redis统一配置</h4><p>在实际项目中,使用缓存时一般要考虑统一管理key的前缀，超时时间等.在使用spring-boot时，我们可以如下配置redis：</p>
+<a id="more"></a>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableCaching</span></span><br><span class="line"><span class="comment">//不继承CachingConfigurerSupport则@CachePut会抛出类型转换异常</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisCacheConfig</span> <span class="keyword">extends</span> <span class="title">CachingConfigurerSupport</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;spring.profiles.active&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String env;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;spring.application.name&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String app;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RedisTemplate&lt;Object, Object&gt; <span class="title">redisTemplate</span><span class="params">(RedisConnectionFactory factory)</span> </span>&#123;</span><br><span class="line">        RedisTemplate&lt;Object, Object&gt; redisTemplate = <span class="keyword">new</span> RedisTemplate&lt;&gt;();</span><br><span class="line">        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = <span class="keyword">new</span> Jackson2JsonRedisSerializer(Object.class);</span><br><span class="line">        <span class="comment">//ObjectMapper 反序列化</span></span><br><span class="line">        ObjectMapper om = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);</span><br><span class="line">        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);</span><br><span class="line">        jackson2JsonRedisSerializer.setObjectMapper(om);</span><br><span class="line"></span><br><span class="line">        redisTemplate.setKeySerializer(redisTemplate.getStringSerializer());</span><br><span class="line">        redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);</span><br><span class="line"></span><br><span class="line"><span class="comment">//        redisTemplate.setValueSerializer(new FastJsonRedisSerializer&lt;&gt;(Object.class));</span></span><br><span class="line">        redisTemplate.setConnectionFactory(factory);</span><br><span class="line">        redisTemplate.afterPropertiesSet();</span><br><span class="line">        <span class="keyword">return</span> redisTemplate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 统一的前缀: app:env:cacheName</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RedisCachePrefix <span class="title">redisCachePrefix</span><span class="params">()</span></span>&#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> RedisCachePrefix() &#123;</span><br><span class="line">           <span class="keyword">private</span> <span class="keyword">final</span> RedisSerializer serializer = <span class="keyword">new</span> StringRedisSerializer();</span><br><span class="line">           <span class="keyword">private</span> <span class="keyword">final</span> String delimiter = <span class="string">&quot;:&quot;</span>;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="keyword">byte</span>[] prefix(String cacheName) &#123;</span><br><span class="line">                String prefix = String.join(delimiter, app, env, cacheName,<span class="string">&quot;&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span> serializer.serialize(prefix);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> CacheManager <span class="title">cacheManager</span><span class="params">(RedisTemplate redisTemplate)</span> </span>&#123;</span><br><span class="line">        RedisCacheManager redisCacheManager = <span class="keyword">new</span> RedisCacheManager(redisTemplate);</span><br><span class="line">        <span class="comment">//设置缓存失效时长，秒级 30分钟</span></span><br><span class="line">        redisCacheManager.setDefaultExpiration(<span class="number">60</span>*<span class="number">30</span>);</span><br><span class="line">        redisCacheManager.setCachePrefix(redisCachePrefix());</span><br><span class="line">        redisCacheManager.setUsePrefix(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> redisCacheManager;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>比如我们的app名称为myapp,env是test,使用spring-cache作为缓存框架时:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Cacheable(cacheNames = &quot;user&quot;,key = &quot;&#x27;userId:&#x27;+#userId&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> User <span class="title">getUser</span><span class="params">(Long userId)</span></span>&#123;</span><br><span class="line">	<span class="comment">//....get a user</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的例子中，如果查询userId=1的用户,就会生成<code>myapp:test:user:userId:1</code><br>如果@Cacheable中不传入key，那么生成<code>myapp:test:user:1</code></p>
+<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项:"></a>注意事项:</h4><p>1.因为spring-cache是基于AOP实现的，因此在一个内中自调用另一个有缓存注解的方法是不会生效的。解决这个有2种方式:</p>
+<ul>
+<li>可以在上一层分开调用这两个方法</li>
+<li>在调用处通过spring context把该对象取出来，直接用对象方式来调用  </li>
+</ul>
+<p>2.同理，如果该方法被其它注解切入，当缓存命中的时候，不会进入该切面;当缓存没有命中的时候，可以进入</p>
+<p>我们简单写个demo，首先定义一个启动类和一个rest接口，在方法上使用@Cacheable标识该方法的返回结果将被缓存起来.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//com.example.RedisDemoApplication</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisDemoApplication</span> </span>&#123;</span><br><span class="line">    <span class="meta">@GetMapping(&quot;/user/&#123;userId&#125;&quot;)</span></span><br><span class="line">    <span class="meta">@Cacheable(cacheNames = &quot;user&quot;, key = &quot;&#x27;userId:&#x27;+#userId&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> User <span class="title">getUser</span><span class="params">(<span class="meta">@PathVariable</span> String userId)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//get a user</span></span><br><span class="line">        System.out.println(<span class="string">&quot;get user form db.......&quot;</span>);</span><br><span class="line">        User user = <span class="keyword">new</span> User();</span><br><span class="line">        user.setUserId(userId);</span><br><span class="line">        user.setUsername(<span class="string">&quot;test&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(RedisDemoApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>定义一个切面,配置切入点为我们上面定义的<code>getUser</code>这个方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//com.example.aop.UserAspect</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserAspect</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 配置切入点</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Pointcut(&quot;execution(public * com.example.RedisDemoApplication.getUser(..))&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">aspect</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Before(&quot;aspect()&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doBefore</span><span class="params">(JoinPoint jp)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;进入切面....&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>启动后，我们在浏览器测试：</p>
+<ul>
+<li>首次次访问<code>http://localhost:8080/user/1</code>,观察控制台输出:  <blockquote>
+<p>进入切面….<br>get user form db…….</p>
+</blockquote>
+</li>
+<li>再次访问<code>http://localhost:8080/user/1</code>，因为缓存命中了(前提是未过期),所以没有进入切面,观察控制台无输出: <blockquote>
+<p>&nbsp;</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="pom-xml"><a href="#pom-xml" class="headerlink" title="pom.xml"></a>pom.xml</h4><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">version</span>&gt;</span>1.5.17.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span> <span class="comment">&lt;!-- lookup parent from repository --&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.example<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>redis-demo<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>0.0.1-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">name</span>&gt;</span>redis-demo<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">description</span>&gt;</span>Demo project for Spring Boot<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">java.version</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">java.version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-cache<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-aop<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>SpringBoot</category>
+      </categories>
+      <tags>
+        <tag>redis</tag>
+        <tag>java</tag>
+        <tag>springboot</tag>
+        <tag>spring-cache</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ExecutorService</title>
+    <url>/uncategorized/xecutorService/</url>
+    <content><![CDATA[<h2 id="java并发ExecutorService"><a href="#java并发ExecutorService" class="headerlink" title="java并发ExecutorService"></a>java并发ExecutorService</h2><h4 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ExecutorService</span> <span class="keyword">extends</span> <span class="title">Executor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">shutdown</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">List&lt;Runnable&gt; <span class="title">shutdownNow</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isShutdown</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isTerminated</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">awaitTermination</span><span class="params">(<span class="keyword">long</span> timeout, TimeUnit unit)</span></span></span><br><span class="line"><span class="function">        <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"></span><br><span class="line">    &lt;T&gt; <span class="function">Future&lt;T&gt; <span class="title">submit</span><span class="params">(Callable&lt;T&gt; task)</span></span>;</span><br><span class="line"></span><br><span class="line">    &lt;T&gt; <span class="function">Future&lt;T&gt; <span class="title">submit</span><span class="params">(Runnable task, T result)</span></span>;</span><br><span class="line"></span><br><span class="line">    Future&lt;?&gt; submit(Runnable task);</span><br><span class="line"></span><br><span class="line">    &lt;T&gt; List&lt;Future&lt;T&gt;&gt; invokeAll(Collection&lt;? extends Callable&lt;T&gt;&gt; tasks)</span><br><span class="line">        <span class="keyword">throws</span> InterruptedException;</span><br><span class="line"></span><br><span class="line">   </span><br><span class="line">    &lt;T&gt; List&lt;Future&lt;T&gt;&gt; invokeAll(Collection&lt;? extends Callable&lt;T&gt;&gt; tasks,</span><br><span class="line">                                  <span class="keyword">long</span> timeout, TimeUnit unit)</span><br><span class="line">        <span class="keyword">throws</span> InterruptedException;</span><br><span class="line"></span><br><span class="line">    &lt;T&gt; <span class="function">T <span class="title">invokeAny</span><span class="params">(Collection&lt;? extends Callable&lt;T&gt;&gt; tasks)</span></span></span><br><span class="line"><span class="function">        <span class="keyword">throws</span> InterruptedException, ExecutionException</span>;</span><br><span class="line"></span><br><span class="line">    &lt;T&gt; <span class="function">T <span class="title">invokeAny</span><span class="params">(Collection&lt;? extends Callable&lt;T&gt;&gt; tasks,</span></span></span><br><span class="line"><span class="function"><span class="params">                    <span class="keyword">long</span> timeout, TimeUnit unit)</span></span></span><br><span class="line"><span class="function">        <span class="keyword">throws</span> InterruptedException, ExecutionException, TimeoutException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>ExecutorService</code>用于管理中止任务或者跟踪异步任务处理。</p>
+<a id="more"></a>  
+<p>要使用<code>ExecutorService</code>,首先需要定义一个任务:  </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Task</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;task begin........&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>,接着我们可以使用工厂类<code>Executors</code>实例化一个<code>ExecutorService</code>:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ExecutorService executorService = Executors.newFixedThreadPool(<span class="number">4</span>);</span><br><span class="line">executorService.submit(<span class="keyword">new</span> Task());</span><br></pre></td></tr></table></figure>
+<p>，<code>Executors</code>提供了返回各种<code>ExecutorService</code>的工厂方法，例如如果我们需要单线程执行我们的任务，可以这样获取:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ExecutorService executorService = Executors.newSingleThreadExecutor();</span><br></pre></td></tr></table></figure>
+<p>,最后我们关闭<code>ExecutorService</code>：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">executorService.shutdown();</span><br></pre></td></tr></table></figure>
+<p>正如上面代码所示，<code>ExecutorService</code>可以被关闭，一旦关闭后他就拒绝接收新任务了。它提供了两种关闭的方法:  </p>
+<ul>
+<li><code>void shutdown()</code>允许已经提交的任务执行完成后再终结</li>
+<li><code>List&lt;Runnable&gt; shutdownNow()</code>会立即中止等待开始的任务和正在执行中的任务</li>
+</ul>
+<p>一旦终止后，Executor就不会有正在执行的任务，也不会有等待执行的任务，同时也不能提交新任务。不再使用的<code>ExecutorService</code>应当被关闭，以便释放它的资源。<br>在上面的代码中，我们通过<code>executorService.submit(new Task())</code>来提交任务，方法<code>submit</code>扩展了基本方法<code>Executor.execute(Runnable)</code>,它创建并返回一个可以用来取消或者等待完成的<code>Future</code>接口.</p>
+<p>在java doc文档中提供了一个简单的网络服务例子，它会等待每个请求的到来并从线程池中获取一个线程来服务请求:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NetworkService</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">final</span> ServerSocket serverSocket;</span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">final</span> ExecutorService pool;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="title">NetworkService</span><span class="params">(<span class="keyword">int</span> port, <span class="keyword">int</span> poolSize)</span></span></span><br><span class="line"><span class="function">       <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">     serverSocket = <span class="keyword">new</span> ServerSocket(port); </span><br><span class="line">     pool = Executors.newFixedThreadPool(poolSize);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123; <span class="comment">// run the service</span></span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">       <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">         pool.execute(<span class="keyword">new</span> Handler(serverSocket.accept())); <span class="comment">//这里会阻塞直到获取一个socket请求</span></span><br><span class="line">       &#125;</span><br><span class="line">     &#125; <span class="keyword">catch</span> (IOException ex) &#123;</span><br><span class="line">       pool.shutdown(); <span class="comment">//关闭</span></span><br><span class="line">     &#125;</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="class"><span class="keyword">class</span> <span class="title">Handler</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">final</span> Socket socket;</span><br><span class="line">   Handler(Socket socket) &#123; <span class="keyword">this</span>.socket = socket; &#125;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     <span class="comment">// read and service request on socket  //处理请求</span></span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>下面是分两阶段关闭一个<code>ExecutorService</code>,首先调用<code>shutdown</code>来拒绝接收到来的新任务，接着在必要时刻调用<code>shutdownNow</code>来取消任何遗留的任务:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">shutdownAndAwaitTermination</span><span class="params">(ExecutorService pool)</span> </span>&#123;</span><br><span class="line">  pool.shutdown(); <span class="comment">// 拒绝接收新提交的任务</span></span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 等待直到所有正在执行的任务中止</span></span><br><span class="line">    <span class="keyword">if</span> (!pool.awaitTermination(<span class="number">60</span>, TimeUnit.SECONDS)) &#123;</span><br><span class="line">      pool.shutdownNow(); <span class="comment">// 取消当前正在执行的任务</span></span><br><span class="line">      <span class="comment">// 等待直到任务响应告知已经被取消</span></span><br><span class="line">      <span class="keyword">if</span> (!pool.awaitTermination(<span class="number">60</span>, TimeUnit.SECONDS))</span><br><span class="line">          System.err.println(<span class="string">&quot;Pool did not terminate&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (InterruptedException ie) &#123;</span><br><span class="line">    <span class="comment">// 如果当前线程本身被中断</span></span><br><span class="line">    pool.shutdownNow();</span><br><span class="line">    <span class="comment">// 保持当前线程的中断状态</span></span><br><span class="line">    Thread.currentThread().interrupt();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>方法<code>boolean awaitTermination(long timeout, TimeUnit unit)</code>会阻塞等待直到所有任务完成或者超过预设的等待时间。<br><code>invokeAny</code>和 <code>invokeAll</code>是最常用的执行一组批量任务的形式，并且它会等待至少一个或者所有任务完成:</p>
+<ul>
+<li><code>invokeAny</code>执行给定的任务集，只要有一个成功完成，就返回。一旦一个正常返回或者抛出异常，所有未完成的任务都会被取消。</li>
+<li><code>invokeAll</code>会等待所有任务执行完成后返回.</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>Linux RPM包及yum源制作</title>
+    <url>/linux/inux-RPM%E5%8C%85%E5%8F%8Ayum%E6%BA%90%E5%88%B6%E4%BD%9C/</url>
+    <content><![CDATA[<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>RPM是Red Hat Enterprise Linux, CentOS, and Fedora等linux的包管理器，使用RPM可以很容易的发布，管理，更新这些系统上的软件.</p>
+<p>使用RPM可以做如下事情:   </p>
+<ul>
+<li><strong>安装，重装，卸载，验证软件包</strong><br>用户可以使用标准的包管理工具(Yum 或者 PackageKit)来安装，重装，卸载或者验证软件包</li>
+<li><strong>使用已安装包的数据库来查询或者验证</strong><br>RPM维护了一个数据库来存储已安装的包和它们的文件,用户可以很容易查询和验证自己系统上安装的软件包</li>
+<li><strong>使用元数据来描述软件包，以及安装手册等</strong><br>每个RPM包都包含一个元数据用来描述该包的组件，版本，发布，大小，工程的URL，安装介绍等信息</li>
+<li><strong>将原始的软件源打包成源代码包和二进制包</strong><br>RPM允许将原始的软件源码打包成源码包或者二进制包提供给你的用户.在源代码包中，你有原始的源代码以及使用的任何补丁，以及完整的构建说明.随着软件新版本发布，这种设计简化了软件包的维护。</li>
+<li><strong>添加包到yum仓库</strong><br>可以添加你的RPM包到yum仓库，这样用户就可以很容易的找到并部署你的软件</li>
+<li><strong>对你的软件包进行数字签名</strong><br>使用GPG签名密钥，你可以对包进行数字签名，以便用户能够验证包的真实性。<a id="more"></a>
+<h2 id="RPM包"><a href="#RPM包" class="headerlink" title="RPM包"></a>RPM包</h2>这里主要描述RPM制作的环境准备，以及一些基础概念，<a href="https://rpm-packaging-guide.github.io/#advanced-topics"><strong>高级主题</strong></a>在这里可以找到.<h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3>为了制作我们的RPM包，我们需要在自己的linux机器上安装相关工具和环境,这里以Centos7为例.  <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> yum install gcc rpm-build rpm-devel rpmlint make python bash coreutils diffutils patch rpmdevtools</span></span><br></pre></td></tr></table></figure>
+如果是Fedora<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> dnf install gcc rpm-build rpm-devel rpmlint make python bash coreutils diffutils patch rpmdevtools</span></span><br></pre></td></tr></table></figure>
+<h3 id="什么是RPM包"><a href="#什么是RPM包" class="headerlink" title="什么是RPM包"></a>什么是RPM包</h3>RPM package就是一个简单的文件，该文件包含了系统所需要的一些其他文件以及对这些文件的信息。具体来说，一个RPM包由包含文件的<a href="https://en.wikipedia.org/wiki/Cpio">CPIO归档文件</a>和包含该包元数据的RPM头组成。rpm包管理就是通过该元数据来决定包的依赖,安装路径以及其他信息.  </li>
+</ul>
+<p>有两类的RPM包:  </p>
+<ul>
+<li>RPM源码包(source RPM),即<code>SRPM</code></li>
+<li>二进制RPM包(binary RPM)  </li>
+</ul>
+<p>源码rpm包和二进制RPM包共享文件格式和工具，但是具有不同的内容和作用.<code>SRPM</code>包含了源码，可选的补丁以及<code>SPEC</code>文件，<code>SPEC</code>文件描述了如何将该<code>SRPM</code>构建为<code>binary RPM</code>.<br><code>binary RPM</code>包含了从源码以及补丁构建的二进制文件</p>
+<h3 id="RPM打包工具"><a href="#RPM打包工具" class="headerlink" title="RPM打包工具"></a>RPM打包工具</h3><p>在上面环境准备过程中,已经安装了RPM打包过程中可能用到的工具，可以通过下面的命令来获取工具列表:  </p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> rpm -ql rpmdevtools | grep bin</span></span><br></pre></td></tr></table></figure>
+<h3 id="RPM工作空间"><a href="#RPM工作空间" class="headerlink" title="RPM工作空间"></a>RPM工作空间</h3><p>类似于我们开发程序，有个工作空间来存放我们的源码，编译文件等，制作RPM也需要工作空间。首次使用时，我们可以使用<code>rpmdev-setuptree</code>来初始化工作空间:  </p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> rpmdev-setuptree</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> tree ~/rpmbuild/</span></span><br><span class="line">/home/rpmuser/rpmbuild/</span><br><span class="line">|-- BUILD</span><br><span class="line">|-- RPMS</span><br><span class="line">|-- SOURCES</span><br><span class="line">|-- SPECS</span><br><span class="line">`-- SRPMS</span><br></pre></td></tr></table></figure>
+<p>可以看到<code>rpmdev-setuptree</code>帮我们在当前用户的目录下生成了rpm的工作空间,这些目录的作用如下:  </p>
+<table>
+<thead>
+<tr>
+<th align="center">目录</th>
+<th align="left">作用</th>
+<th>补充</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">BUILD</td>
+<td align="left">当构建包时，在此创建各种%buildRoot目录。如果日志输出没有提供足够的信息,该目录对排错也很有用.</td>
+<td>我们对源码压缩包进行构建rpm时,解压后的文件就是放在这个目录的</td>
+</tr>
+<tr>
+<td align="center">RPMS</td>
+<td align="left">我们制作的Binary RPM就存放在这里,在这个目录中会根据系统架构创建不同的子目录,比如<code>x86_64</code>和<code>noarch</code>,我们的RPM包就放在对应的子目录下</td>
+<td>生成<code>x86_64</code>或者<code>noarch</code>类型的rpm可以通过<code>SPEC</code>文件指定</td>
+</tr>
+<tr>
+<td align="center">SOURCES</td>
+<td align="left">这里是打包用户放置源码压缩包或补丁的目录，<code>rpmbuild</code>命令就是在这里找源码包的</td>
+<td>一般我们会将源码包压缩为<code>.tar.gz</code>格式，然后放在这个目录进行RPM构建</td>
+</tr>
+<tr>
+<td align="center">SPECS</td>
+<td align="left">放置SPEC文件</td>
+<td>每制作一个应用的rpm包,就需要对应一个SPEC文件，该文件就是放在这个目录</td>
+</tr>
+<tr>
+<td align="center">SRPMS</td>
+<td align="left">当使用<code>rpmbuild</code>构建RPM源码包时，构建的SRPM就是放在这的</td>
+<td>构建源码包的目的就是和当前系统架构解耦</td>
+</tr>
+</tbody></table>
+<h3 id="什么是SPEC文件"><a href="#什么是SPEC文件" class="headerlink" title="什么是SPEC文件"></a>什么是SPEC文件</h3><p><code>SPEC</code>文件可以看做是一个”菜谱”,<code>rpmbuild</code>工具使用该”菜谱”来实际构建RPM.它通过在一系列<code>section</code>中定义指令来告诉构建系统要做什么.<code>sections</code>在前言(<code>Preamble</code>)和正文(<code>Body</code>)中定义。前言包含正文中使用的一系列元数据项，正文包含指令的主要部分。</p>
+<h4 id="前言指令条目"><a href="#前言指令条目" class="headerlink" title="前言指令条目"></a>前言指令条目</h4><p>下表列出了前言中可能包含的一些指令条目:  </p>
+<table>
+<thead>
+<tr>
+<th align="left">SPEC 指令</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>Name</code></td>
+<td align="left">包的基本名字,应该和SPEC文件名保持一致</td>
+</tr>
+<tr>
+<td align="left"><code>Version</code></td>
+<td align="left">软件的上游版本号</td>
+</tr>
+<tr>
+<td align="left"><code>Release</code></td>
+<td align="left">此版本软件发布的次数,初始值设置为 1%{?dist},并且在新发布时增加它. 当该软件新的 <code>Version</code>构建时将该值重置为1.</td>
+</tr>
+<tr>
+<td align="left"><code>Summary</code></td>
+<td align="left">一行简明扼要的概述</td>
+</tr>
+<tr>
+<td align="left"><code>License</code></td>
+<td align="left">正在打包的软件的许可证。对于在社区发行版（如Fedora）中分发的软件包，这必须是一个符合特定发行版许可指南的开源许可证。</td>
+</tr>
+<tr>
+<td align="left"><code>URL</code></td>
+<td align="left">有关程序的详细信息的完整URL。大多数情况下，这是正在打包的软件的上游项目网站。</td>
+</tr>
+<tr>
+<td align="left"><code>Source0</code></td>
+<td align="left">上游源代码压缩存档的路径或url(不含补丁)。这应该指向存档的可访问和可靠存储，例如，上游页面，而不是打包程序的本地存储。如果需要，可以添加更多的sourcex指令，每次增加数字，例如：source1、source2、source3等等。</td>
+</tr>
+<tr>
+<td align="left"><code>Patch0</code></td>
+<td align="left">源码的补丁，如果需要，可以添加更多，例如:Patch1, Patch2,Patch3等等</td>
+</tr>
+<tr>
+<td align="left"><code>BuildArch</code></td>
+<td align="left">如果RPM包不依赖于架构,例如,如果整个使用解释型语言开发,可以设置为<code>BuildArch: noarch</code>.如果不设置，那么就会检测该系统的架构，例如<code>x86_64</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>BuildRequires</code></td>
+<td align="left">逗号或者空格分隔的软件包，主要用来编译由编译型语言编写的程序. 可以有多个<code>BuildRequires</code>节点,每一行列出一个.</td>
+</tr>
+<tr>
+<td align="left"><code>Requires</code></td>
+<td align="left">该软件包安装后运行时依赖的软件包，以逗号和空格分隔. 和<code>BuildRequires</code>一样，也可以有多个节点，每一行一个.</td>
+</tr>
+<tr>
+<td align="left"><code>ExcludeArch</code></td>
+<td align="left">如果该软件不能在特定的处理器体系结构上运行，可以在这里排除该体系结构.</td>
+</tr>
+</tbody></table>
+<p><code>SPEC</code>文件中的<code>Name</code>,<code>Version</code>,<code>Release</code>指令构成了该RPM包的文件名，RPM包的维护人员或者系统管理者通常把这三个指令叫做<strong>N-V-R</strong>或者<strong>NVR</strong>,因为RPM包的名字就是<strong>NAME-VERSION-RELEASE</strong>这样的格式.  </p>
+<p>例如我们查看Python的RPM包,就可以发现这种命名格式</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> rpm -q python</span></span><br><span class="line">python-2.7.5-77.el7_6.x86_64</span><br></pre></td></tr></table></figure>
+<p>这里，<code>python</code>对应于rpm包的<code>Name</code>,<code>2.7.5</code>对应于<code>Version</code>,<code>34.el7_6</code>对应于<code>Release</code>,最后一个标记是x86_64，它表示体系结构.与NVR不同的是，体系结构不是由打包者直接控制的,而是由<code>rpmbuild</code>构建环境定义的.除了与架构无关的<code>noarch</code> rpm包是个例外.</p>
+<h4 id="正文指令条目"><a href="#正文指令条目" class="headerlink" title="正文指令条目"></a>正文指令条目</h4><p>下表是<code>SPEC</code>文件正文部分的指令条目  </p>
+<table>
+<thead>
+<tr>
+<th align="left">SPEC 指令</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>%description</code></td>
+<td align="left">该RPM打包软件的完整描述。此描述可以跨多行，可以分为多个段落。</td>
+</tr>
+<tr>
+<td align="left"><code>%prep</code></td>
+<td align="left">用于准备要构建的软件的命令或一系列命令，例如，在source0中解包归档文件。此指令可以包含shell脚本。</td>
+</tr>
+<tr>
+<td align="left"><code>%build</code></td>
+<td align="left">一条或多条命令,用来将软件编译为机器码(某些编译型语言)或者字节码(某些解释型语言)</td>
+</tr>
+<tr>
+<td align="left"><code>%install</code></td>
+<td align="left">一条或多条命令，用于将所需的生成项目从%builddir（构建发生的位置）复制到%buildroot目录（包含要打包文件的目录结构）。实际上就是拷贝<code>~/rpmbuild/BUILD</code>中的文件到<code>~/rpmbuild/BUILDROOT</code>中，并在<code>~/rpmbuild/BUILDROOT</code>中创建必要的目录.这些动作只会发生在构建包的时候，在终端用户使用rpm包时并不会发生.详细参考 <a href="https://rpm-packaging-guide.github.io/#working-with-spec-files">working-with-spec-files</a></td>
+</tr>
+<tr>
+<td align="left"><code>%check</code></td>
+<td align="left">一条或多条用于测试该软件的命令,例如包含几个单元测试</td>
+</tr>
+<tr>
+<td align="left"><code>%files</code></td>
+<td align="left">需要安装到客户系统的文件列表</td>
+</tr>
+<tr>
+<td align="left"><code>%changelog</code></td>
+<td align="left">在不同<code>Version</code>和<code>Release</code>之间发生变化的记录</td>
+</tr>
+</tbody></table>
+<h4 id="高级指令条目"><a href="#高级指令条目" class="headerlink" title="高级指令条目"></a>高级指令条目</h4><p>除了上述一些基本的指令外，<code>SPEC</code>文件也可以包含一些高级的指令,例如一些脚本或者触发器，它们可以在终端用户安装过程中的不同阶段进行执行,(不是在rpm构建过程中执行).<br>查看<a href="https://rpm-packaging-guide.github.io/#triggers-and-scriptlets">triggers-and-scriptlets</a>获取高级主题</p>
+<h3 id="BuildRoots"><a href="#BuildRoots" class="headerlink" title="BuildRoots"></a>BuildRoots</h3><p>在rpm打包的上下文中,”buildroot”是一个<a href="https://en.wikipedia.org/wiki/Chroot">Chroot</a>环境.这意味着构建工件将使用与最终用户系统中相同的文件系统层次结构放置在这里，其中“buildroot”充当根目录,构建工件的放置应该符合最终用户系统的文件系统层次结构标准。  </p>
+<p>“buildroot”文件后面会被放进<a href="https://en.wikipedia.org/wiki/Cpio">cpio归档文件</a>,作为RPM的一个重要组成部分.当在最终用户的系统上安装该RPM包时，这些文件将被提取到根目录中，从而保持正确的层次结构。</p>
+<blockquote>
+<p>!Note: 可以在SPEC文件中使用%{buildroot}来引用该根目录<br>关于Chroot也可以看看<a href="https://www.imooc.com/article/26318">Linux Chroot</a>  </p>
+</blockquote>
+<h3 id="RPM-Macros"><a href="#RPM-Macros" class="headerlink" title="RPM Macros"></a>RPM Macros</h3><p><a href="http://rpm.org/user_doc/macros.html">RPM Macros</a>就是一个纯文本替换,这样可以在重复使用某个值时直接引用它，然后让rpm替你替换它.</p>
+<p>例如，在我们写SPEC文件的过程中，我们可能在多个地方引用<code>Version</code>这个值，我们可以定义<code>Version</code>在<code>%&#123;version&#125;</code>宏中,这样就可以在后续使用<code>%&#123;version&#125;</code>来引用该值</p>
+<p>我们可以通过<code>rpm --eval %&#123;_MACRO&#125;</code>来计算已定义的宏,例如:</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> rpm --<span class="built_in">eval</span> %&#123;_bindir&#125;</span></span><br><span class="line">/usr/bin</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> rpm --<span class="built_in">eval</span> %&#123;_libexecdir&#125;</span></span><br><span class="line">/usr/libexec</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> On a RHEL 7.x machine</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> rpm --<span class="built_in">eval</span> %&#123;?dist&#125;</span></span><br><span class="line">.el7</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> On a Fedora 23 machine</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> rpm --<span class="built_in">eval</span> %&#123;?dist&#125;</span></span><br><span class="line">.fc23</span><br></pre></td></tr></table></figure>
+
+<p>已经预定义了很多宏,详情查看<a href="https://rpm-packaging-guide.github.io/#more-on-macros">more-on-macros</a></p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>到这里，我们基本熟悉了RPM的基础概念以及准备工作，下面我们就开始使用SPEC文件来构建我们的RPM包</p>
+<h4 id="源码包准备"><a href="#源码包准备" class="headerlink" title="源码包准备"></a>源码包准备</h4><h5 id="bash脚本"><a href="#bash脚本" class="headerlink" title="bash脚本"></a>bash脚本</h5><ul>
+<li>在我们的工作空间创建<code>bello.sh</code><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">printf &quot;Hello World\n&quot;</span><br></pre></td></tr></table></figure></li>
+<li>我们把<code>bello.sh</code>变为可执行的<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> chmod +x bello.sh</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ./bello</span></span><br><span class="line">Hello World</span><br></pre></td></tr></table></figure></li>
+<li>我们再随便建一个LICENSE文件:<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"><span class="built_in">echo</span> GPLv3+ &gt; LICENSE</span></span><br><span class="line"><span class="meta">$</span><span class="bash">tree</span></span><br><span class="line">  |─ bello</span><br><span class="line">    |─ bello.sh</span><br><span class="line">    |─ LICENSE</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li>打包我们的源码,一般压缩包的命名方式为<strong>name-version.tar.gz</strong><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tar -cvzf bello-0.1.tar.gz bello</span></span><br><span class="line">bello/</span><br><span class="line">bello/LICENSE</span><br><span class="line">bello/bello.sh</span><br></pre></td></tr></table></figure></li>
+<li>将源码包拷贝至<code>rpmbuild</code>工作空间的<code>SOURCES</code>子目录下<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mv bello-0.1.tar.gz ~/rpmbuild/SOURCES/</span></span><br></pre></td></tr></table></figure>
+<h5 id="C程序包"><a href="#C程序包" class="headerlink" title="C程序包"></a>C程序包</h5><ol>
+<li>cello<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> $ mkdir cello &amp;&amp; cd cello</span><br><span class="line"> $ vim cello.c</span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">int main()&#123;</span><br><span class="line">  printf(&quot;Hello world.\n&quot;);</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+<p>2.因为C程序需要编译安装，所以再写个<code>Makefile</code>:<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> cello:</span><br><span class="line">        gcc -g -o cello cello.c</span><br><span class="line"></span><br><span class="line">clean:</span><br><span class="line">        rm cello</span><br><span class="line"></span><br><span class="line">install:</span><br><span class="line">        mkdir -p $(DESTDIR)&#x2F;usr&#x2F;bin</span><br><span class="line">        install -m 0755 cello $(DESTDIR)&#x2F;usr&#x2F;bin&#x2F;cello</span><br><span class="line"> </span><br></pre></td></tr></table></figure></p>
+<h5 id="Java-Spring-Boot程序包"><a href="#Java-Spring-Boot程序包" class="headerlink" title="Java Spring Boot程序包"></a>Java Spring Boot程序包</h5><h5 id="前端包"><a href="#前端包" class="headerlink" title="前端包"></a>前端包</h5><p>到这里，我们已经准备好了我们的源码包,下面就开始写<code>SPEC</code>文件  </p>
+<h4 id="Working-with-SPEC-files"><a href="#Working-with-SPEC-files" class="headerlink" title="Working with SPEC files"></a>Working with SPEC files</h4><p>源码包准备好以后，我们开始编写<code>SPEC</code>文件，在前面我们提到,<code>SPEC</code>文件实际是构建RPM包的”菜谱”,为了构建RPM包，我们大部分的工作就是编写<code>SPEC</code>文件  </p>
+<p>每构建一个新的软件包，我们首先需要创建一个对应额SPEC文件，手动写SPEC文件比较麻烦，我们可以使用<code>rpmdev-newspec</code>工具创建一个SPEC文件模板，我们只需要填充必要的部分.</p>
+<h5 id="创建bello-SPEC文件"><a href="#创建bello-SPEC文件" class="headerlink" title="创建bello SPEC文件"></a>创建bello SPEC文件</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> ~/rpmbuild/SPECS</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> rpmdev-newspec bello</span></span><br><span class="line"> bello.spec created; type minimal, rpm version &gt;= 4.11. </span><br></pre></td></tr></table></figure>
+<p>我们可以看一下生成的spec文件内容:<br> <figure class="highlight plain"><figcaption><span>bello.spec</span></figcaption><table><tr><td class="code"><pre><span class="line">Name:           bello  </span><br><span class="line">Version:        </span><br><span class="line">Release:        1%&#123;?dist&#125;  </span><br><span class="line">Summary:        </span><br><span class="line"></span><br><span class="line">License:        </span><br><span class="line">URL:            </span><br><span class="line">Source0:        </span><br><span class="line"></span><br><span class="line">BuildRequires:  </span><br><span class="line">Requires:       </span><br><span class="line"></span><br><span class="line">%description  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%prep  </span><br><span class="line">%setup -q</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%build  </span><br><span class="line">%configure  </span><br><span class="line">make %&#123;?_smp_mflags&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%install  </span><br><span class="line">rm -rf $RPM_BUILD_ROOT  </span><br><span class="line">%make_install</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%files  </span><br><span class="line">%doc  </span><br><span class="line"></span><br><span class="line">%changelog   </span><br><span class="line"> </span><br></pre></td></tr></table></figure></p>
+<h5 id="修改bello-SPEC文件"><a href="#修改bello-SPEC文件" class="headerlink" title="修改bello.SPEC文件"></a>修改bello.SPEC文件</h5><ol>
+<li><p>填充<code>Name</code>, <code>Version</code>, <code>Release</code>, 和 <code>Summary</code>条目</p>
+<ul>
+<li><code>Name</code>已经通过<code>rpmdev-newspec</code>参数指定了</li>
+<li>设置<code>Version</code>,与bello源码的上游版本号相匹配，这里是<code>0.1</code></li>
+<li>这里<code>Release</code>已经被自动设置为初始值<code>1</code>.当需要更新这个包但是上游版本号不变时，例如补丁更新,需要递增该值.当上游一个新版本发布时，例如发布<code>bello-0.2</code>，那么需要将该值重置为<code>1</code>. <code>%&#123;?dist&#125;</code>我们在上面的宏部分已经说过了.  </li>
+<li><code>Summary</code>写一行简明的概述<br>在修改后，bello.spec文件长这样:  <figure class="highlight plain"><figcaption><span>bello.spec</span></figcaption><table><tr><td class="code"><pre><span class="line">Name:           bello</span><br><span class="line">Version:        0.1</span><br><span class="line">Release:        1%&#123;?dist&#125;</span><br><span class="line">Summary:        Hello World example implemented in bash script</span><br></pre></td></tr></table></figure>    
+</li>
+</ul>
+</li>
+<li><p>填充<code>License</code>, <code>URL</code>, 和<code>Source0</code> 条目:</p>
+<ul>
+<li><code>License</code>文件格式可以参考<a href="https://fedoraproject.org/wiki/Licensing:Main">Fedora License Guidelines</a>,这里我们使用<code>GPLv3+</code></li>
+<li><code>URL</code>提供了到软件主页的访问地址.例如<code>https://example.com/bello</code>,一般使用<code> %&#123;name&#125;</code>宏来代替，如<code>https://example.com/%&#123;name&#125;</code></li>
+<li><code>Source0</code>提供了到源码的访问路径.它应该直接指向正在需要打包的软件，例如<code>https://example.com/bello/releases/bello-0.1.tar.gz</code>,使用宏替代则为:<code>https://example.com/%&#123;name&#125;/releases/%&#123;name&#125;-%&#123;version&#125;.tar.gz</code>.<br>在我们修改后，长这样:<figure class="highlight plain"><figcaption><span>bello.spec</span></figcaption><table><tr><td class="code"><pre><span class="line">Name:           bello</span><br><span class="line">Version:        0.1</span><br><span class="line">Release:        1%&#123;?dist&#125;</span><br><span class="line">Summary:        Hello World example implemented in bash script</span><br><span class="line"></span><br><span class="line">License:        GPLv3+</span><br><span class="line">URL:            https:&#x2F;&#x2F;example.com&#x2F;%&#123;name&#125;</span><br><span class="line">Source0:        https:&#x2F;&#x2F;example.com&#x2F;%&#123;name&#125;&#x2F;release&#x2F;%&#123;name&#125;-% &#123;version&#125;.tar.gz</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>填充<code>BuildRequires</code>和<code>Requires</code>以及<code>BuildArch</code>条目</p>
+<ul>
+<li><code>BuildRequires</code>指定了软件包构建时期的依赖,对于bello来说，没有构建这一步骤，因为bello是通过解释型语言编写的，只需要将该文件安装到客户本地文件系统上即可.因此这里直接删除该条目即可.</li>
+<li><code>Requires</code>指定了软件运行时期的依赖项，因为我们的bello只依赖于<code>bash</code>执行环境,因此只需要添加<code>bash</code>即可.</li>
+<li>因为bello程序是通过解释型语言编写的，不需要编译，因此需要设置<code>BuildArch</code>为<code>noarch</code>,这样就告诉RPM构建包时不需要去绑定打包机器的处理器架构.<br>编辑完成后，我们的spec文件长这样了:<figure class="highlight plain"><figcaption><span>bello.spec</span></figcaption><table><tr><td class="code"><pre><span class="line">Name:           bello</span><br><span class="line">Version:        0.1</span><br><span class="line">Release:        1%&#123;?dist&#125;</span><br><span class="line">Summary:        Hello World example implemented in bash script</span><br><span class="line"></span><br><span class="line">License:        GPLv3+</span><br><span class="line">URL:            https:&#x2F;&#x2F;example.com&#x2F;%&#123;name&#125;</span><br><span class="line">Source0:        https:&#x2F;&#x2F;example.com&#x2F;%&#123;name&#125;&#x2F;release&#x2F;%&#123;name&#125;-%&#123;version&#125;.tar.gz</span><br><span class="line"></span><br><span class="line">Requires:       bash</span><br><span class="line"></span><br><span class="line">BuildArch:      noarch</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>填充<code>%description</code>,<code>%prep</code>, <code>%build</code>, <code>%install</code>, <code>%files</code>,和<code>%changelog</code>条目。这些条目相当于一个章节标题,因为可以有多行，多个指令或者多个脚本任务执行。</p>
+<ul>
+<li><code>%description</code>是一段长的，完整的关于该软件的描述,可以包含一个或多个段落</li>
+<li><code>%prep</code>部分指定了如何去准备构建环境.通常涉及扩展源代码的压缩文档，补丁的应用，以及可能解析源代码中提供的信息，以便在SPEC的后续部分中使用。例子中我们简单使用内置的宏<code>%setup -q</code></li>
+<li><code>%build</code>部分指定了怎样去构建我们的软件. 因为<code>bash</code>不需要构建，因此这里直接删除模板中提供的，留一个空行就行了</li>
+<li><code>%install</code>部分规定了<code>rpmbuild</code>在构建软件后将其安装到<code>BUILDROOT</code>目录下的操作.该目录是一个空的<a href="https://en.wikipedia.org/wiki/Chroot">chroot</a>根目录，类似于最终用户的根目录。 在这里，我们应该创建任何包含已安装文件的目录。<br>因为安装<code>bello</code>仅仅需要创建一个目标文件夹，然后把可执行的bash脚本安装在该目录即可，我们会使用<code>install</code>命令来完成该操作.RPM的宏允许我们能够完成这些操作而不需要硬编码我们的安装路径.<br>这样，我们修改后的<code>%install</code>部分:<figure class="highlight plain"><figcaption><span>bello.spec</span></figcaption><table><tr><td class="code"><pre><span class="line"> %install</span><br><span class="line"></span><br><span class="line">mkdir -p %&#123;buildroot&#125;&#x2F;%&#123;_bindir&#125;</span><br><span class="line"></span><br><span class="line">install -m 0755 %&#123;name&#125; %&#123;buildroot&#125;&#x2F;%&#123;_bindir&#125;&#x2F;%&#123;name&#125;</span><br><span class="line">  </span><br></pre></td></tr></table></figure></li>
+<li><code>%files</code>部分列出了RPM提供的文件列表,以及安装到终端用户系统中的全路径.因此，<code>bello</code>安装包只提供了一个<code>/usr/bin/bello.sh</code>文件需要安装,使用宏代替则为<code>%&#123;_bindir&#125;/&#123;name&#125;</code><br>在这个部分中，我们可以使用内置的宏指定标识文件的角色,这样的好处在于可以通过rpm命令来检索这些元数据.例如，为了表明<strong>LICENSE</strong>文件是一个软件的<code>license file</code>,我们可以使用宏<code>%license</code>来标明:<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">  %</span><span class="bash">files</span></span><br><span class="line"><span class="meta">%</span><span class="bash">license LICENSE</span></span><br><span class="line"><span class="meta">%</span><span class="bash">&#123;_bindir&#125;/%&#123;name&#125;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><code>%changelog</code>，这是最后一个部分.是包的每个版本发布的加盖时间戳的条目列表，它们记录了包的变化,而不是软件的变化，例如添加补丁，或者更改<code>%build</code>等构建程序.<br>第一行的格式:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">* Day-of-Week Month Day Year Name Surname &lt;email&gt; - Version-Release</span><br></pre></td></tr></table></figure>
+<p>实际变化的节点格式:</p>
+<ul>
+<li>每一个变化条目可以包含多个项,每一个项对应一个变化.</li>
+<li>每一个项从新的一行开始</li>
+<li>每一个项以<code>-</code>开头  </li>
+</ul>
+<p>例如一个加盖时间戳的变化条目:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> %changelog</span><br><span class="line">* Tue May 31 2016 Adam Miller &lt;maxamillion@fedoraproject.org&gt; - 0.1-1</span><br><span class="line">- First bello package</span><br><span class="line">- Example second item in the changelog for version-release 0.1-1</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>到此,我们终于写好了一个完整的spec文件:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Name:           bello</span><br><span class="line">Version:        0.1</span><br><span class="line">Release:        1%&#123;?dist&#125;</span><br><span class="line">Summary:        Hello World example implemented in bash script</span><br><span class="line"></span><br><span class="line">License:        GPLv3+</span><br><span class="line">URL:            https:&#x2F;&#x2F;www.example.com&#x2F;%&#123;name&#125;</span><br><span class="line">Source0:        https:&#x2F;&#x2F;www.example.com&#x2F;%&#123;name&#125;&#x2F;releases&#x2F;%&#123;name&#125;-%&#123;version&#125;.tar.gz</span><br><span class="line"></span><br><span class="line">Requires:       bash</span><br><span class="line"></span><br><span class="line">BuildArch:      noarch</span><br><span class="line"></span><br><span class="line">%description</span><br><span class="line">The long-tail description for our Hello World Example implemented in</span><br><span class="line">bash script.</span><br><span class="line"></span><br><span class="line">%prep</span><br><span class="line">%setup -q</span><br><span class="line"></span><br><span class="line">%build</span><br><span class="line"></span><br><span class="line">%install</span><br><span class="line"></span><br><span class="line">mkdir -p %&#123;buildroot&#125;&#x2F;%&#123;_bindir&#125;</span><br><span class="line"></span><br><span class="line">install -m 0755 %&#123;name&#125; %&#123;buildroot&#125;&#x2F;%&#123;_bindir&#125;&#x2F;%&#123;name&#125;</span><br><span class="line"></span><br><span class="line">%files</span><br><span class="line">%license LICENSE</span><br><span class="line">%&#123;_bindir&#125;&#x2F;%&#123;name&#125;</span><br><span class="line"></span><br><span class="line">%changelog</span><br><span class="line">* Thu Jun 27 2019 Adam Miller &lt;maxamillion@fedoraproject.org&gt; - 0.1-1</span><br><span class="line">- First bello package</span><br><span class="line">- Example second item in the changelog for version-release 0.1-1</span><br></pre></td></tr></table></figure>  
+
+<p>注意，我们在例子中<code>Source0</code>条目为:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Source0:        https:&#x2F;&#x2F;www.example.com&#x2F;%&#123;name&#125;&#x2F;releases&#x2F;%&#123;name&#125;-%&#123;version&#125;.tar.gz</span><br></pre></td></tr></table></figure>
+<p>这会从我们的发布地址去拉取源码<code>tar.gz</code>包，但是我们实际上已经把bello打好包并放入了<code>rpmbuild/SOURCES</code>文件下了，因此我们需要这样指定即可:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Source0:        %&#123;name&#125;-%&#123;version&#125;.tar.gz</span><br></pre></td></tr></table></figure>
+
+<h5 id="C程序cello-spec"><a href="#C程序cello-spec" class="headerlink" title="C程序cello.spec"></a>C程序cello.spec</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Name:           cello</span><br><span class="line">Version:        1.0</span><br><span class="line">Release:        1%&#123;?dist&#125;</span><br><span class="line">Summary:        Hello World example implemented in C</span><br><span class="line"></span><br><span class="line">License:        GPLv3+</span><br><span class="line">URL:            https:&#x2F;&#x2F;www.example.com&#x2F;%&#123;name&#125;</span><br><span class="line">Source0:        https:&#x2F;&#x2F;www.example.com&#x2F;%&#123;name&#125;&#x2F;releases&#x2F;%&#123;name&#125;-%&#123;version&#125;.tar.gz</span><br><span class="line"></span><br><span class="line">BuildRequires:  gcc</span><br><span class="line">BuildRequires:  make</span><br><span class="line"></span><br><span class="line">%description</span><br><span class="line">The long-tail description for our Hello World Example implemented in</span><br><span class="line">C.</span><br><span class="line"></span><br><span class="line">%prep</span><br><span class="line">%setup -q</span><br><span class="line"></span><br><span class="line">%build</span><br><span class="line">make %&#123;?_smp_mflags&#125;</span><br><span class="line"></span><br><span class="line">%install</span><br><span class="line">%make_install</span><br><span class="line"></span><br><span class="line">%files</span><br><span class="line">%license LICENSE</span><br><span class="line">%&#123;_bindir&#125;&#x2F;%&#123;name&#125;</span><br><span class="line"></span><br><span class="line">%changelog</span><br><span class="line">* Tue May 31 2016 Adam Miller &lt;maxamillion@fedoraproject.org&gt; - 1.0-1</span><br><span class="line">- First cello package</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h5 id="Java项目jello-spec"><a href="#Java项目jello-spec" class="headerlink" title="Java项目jello.spec"></a>Java项目jello.spec</h5><h5 id="前端静态页面-nginx-hello-spec文件"><a href="#前端静态页面-nginx-hello-spec文件" class="headerlink" title="前端静态页面+nginx hello.spec文件"></a>前端静态页面+nginx hello.spec文件</h5><h4 id="构建RPM包"><a href="#构建RPM包" class="headerlink" title="构建RPM包"></a>构建RPM包</h4><h5 id="源码形式的SRPM构建"><a href="#源码形式的SRPM构建" class="headerlink" title="源码形式的SRPM构建"></a>源码形式的SRPM构建</h5><ul>
+<li>保留部署到环境的RPM的某个名称版本发布的确切来源。 这包括确切的SPEC文件，源代码和所有相关补丁。 这对于回顾历史和调试很有用。</li>
+<li>能够在不同的硬件平台或体系结构上构建二进制RPM。<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpmbuild -bs bello.spec</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h5 id="二进制形式的RPM构建"><a href="#二进制形式的RPM构建" class="headerlink" title="二进制形式的RPM构建"></a>二进制形式的RPM构建</h5><h6 id="从SRPM构建"><a href="#从SRPM构建" class="headerlink" title="从SRPM构建"></a>从SRPM构建</h6><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpmbuild --rebuild ~&#x2F;rpmbuild&#x2F;SRPMS&#x2F;bello-0.1-1.el7.src.rpm</span><br></pre></td></tr></table></figure>
+<h6 id="直接从spec文件构建"><a href="#直接从spec文件构建" class="headerlink" title="直接从spec文件构建"></a>直接从spec文件构建</h6><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpmbuild -bb bello.spec</span><br></pre></td></tr></table></figure>
+
+<h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><ul>
+<li><a href="https://rpm-packaging-guide.github.io/">RPM Packaging Guide</a></li>
+<li><a href="https://docs.fedoraproject.org/en-US/quick-docs/creating-rpm-packages/index.html">creating-rpm-packages</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>rpm</tag>
+        <tag>yum</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>死锁与死锁排查</title>
+    <url>/java%E5%B9%B6%E5%8F%91/%E6%AD%BB%E9%94%81%E4%B8%8E%E6%AD%BB%E9%94%81%E6%8E%92%E6%9F%A5/</url>
+    <content><![CDATA[<h4 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h4><p>普遍的来说，死锁发生在两个及以上线程中，其中一个线程获取x的同步锁并且正在等待获取y的同步锁;而另外一个线程获取了y的同步锁正在等待获取x的同步锁.  </p>
+<a id="more"></a>
+<h4 id="模拟"><a href="#模拟" class="headerlink" title="模拟"></a>模拟</h4><p>假设，我们有下面的一个Cell类,swapValue方法用来与另外一个Cell对象交换值:  </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Cell</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> value;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Cell</span><span class="params">(<span class="keyword">long</span> value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.value = value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">long</span> <span class="title">getValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">setValue</span><span class="params">(<span class="keyword">long</span> value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.value = value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">swapValue</span><span class="params">(Cell other)</span></span>&#123;</span><br><span class="line">        <span class="keyword">long</span> v = <span class="keyword">this</span>.getValue();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            TimeUnit.SECONDS.sleep(<span class="number">1</span>);  <span class="comment">//用来模拟间隔时间,实际中没有</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">long</span> t = other.getValue();</span><br><span class="line">        <span class="keyword">this</span>.setValue(t);</span><br><span class="line">        other.setValue(v);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们在代码中间加了<code>TimeUnit.SECONDS.sleep(1);</code>来模拟间隔时间，以便更容易测试产生死锁的情况.<br>我们可以看到<code>swapValue</code>方法是一个嵌套的同步(<code>synchronized</code>)方法调用，也就是在这个方法中，会尝试获取多个对象锁.<br>设想一下，有两个Cell实例a,b,在某一时刻，当线程t1执行a.swapValue(b),同时另一个线程t2执行b.swapValue(a)时，就有可能产生死锁的情况.我们用下面的表来描述这种情况:</p>
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-uys7{border-color:inherit;text-align:center}
+.tg .tg-xldj{border-color:inherit;text-align:left}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-uys7">线程1（a.swapValue(b)）</th>
+    <th class="tg-uys7">线程2（b.swapValue(a)）</th>
+  </tr>
+  <tr>
+    <td class="tg-xldj">进入a.swapValue(b)时获取到了a的锁</td>
+    <td class="tg-xldj"></td>
+  </tr>
+  <tr>
+    <td class="tg-xldj">在执行v=getValue()时，顺利的获得了a的锁（因为在进入swapValue方法时已经获得）</td>
+    <td class="tg-xldj">进入b.swapValue(a)时获取了b的锁</td>
+  </tr>
+  <tr>
+    <td class="tg-xldj">执行t=other.getValue()时，由于需要b的锁而处于等</td>
+    <td class="tg-xldj">在执行v=getValue()时，顺利的获得了b的锁(同理在进入方法时已经获得)</td>
+  </tr>
+  <tr>
+    <td class="tg-xldj"></td>
+    <td class="tg-xldj">在执行t=other.getValue()时，由于需要a的锁而处于等待</td>
+  </tr>
+</table>
+
+<p>这种情况下，两个线程就永远锁住了:<br><img src="deadlock.png" alt="image"><br>我们可以简单用下面的代码验证下:  </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        ExecutorService es = Executors.newFixedThreadPool(<span class="number">2</span>);</span><br><span class="line">        <span class="keyword">final</span> Cell a = <span class="keyword">new</span> Cell(<span class="number">10</span>);</span><br><span class="line">        <span class="keyword">final</span> Cell b = <span class="keyword">new</span> Cell(<span class="number">5</span>);</span><br><span class="line">        CountDownLatch latch = <span class="keyword">new</span> CountDownLatch(<span class="number">2</span>);</span><br><span class="line">        es.execute(() -&gt; &#123;</span><br><span class="line">            a.swapValue(b);</span><br><span class="line">            latch.countDown();</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        es.execute(() -&gt; &#123;</span><br><span class="line">            b.swapValue(a);</span><br><span class="line">            latch.countDown();</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        es.shutdown();</span><br><span class="line">        latch.await();</span><br><span class="line">        System.out.println(a.getValue());</span><br><span class="line">        System.out.println(b.getValue());</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>这里我们定义了包含两个线程的线程池，和两个Cell实例a,b，接着向线程池中提交了两个任务分别执行<code>a.swapValue(b)</code>和<code>b.swapValue(a)</code>，因为我们上面加了时间休眠，所以运行这段代码很轻松就可以看到程序锁住了。  </p>
+<h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>我们可以看到程序好像卡住了，从上面我们可以推测出可能出现线程死锁了,我们接着借助jdk提供的工具来分析分析原因.</p>
+<h5 id="jps显示java进程"><a href="#jps显示java进程" class="headerlink" title="jps显示java进程"></a>jps显示java进程</h5><p>我们首先通过<code>jps</code>找到我们当前的进程ID:<br><img src="jps.png" alt="jps"><br>这里我们得到当前Cell进程ID为18236</p>
+<h5 id="jstack-命令dump线程信息"><a href="#jstack-命令dump线程信息" class="headerlink" title="jstack 命令dump线程信息"></a>jstack 命令dump线程信息</h5><p>我们使用<code>jstack</code>命令dump出线程信息到当前目录下<code>dumpthread</code>文件中.<br><img src="jstack.png" alt="jps"></p>
+<h5 id="分析线程dump文件"><a href="#分析线程dump文件" class="headerlink" title="分析线程dump文件"></a>分析线程dump文件</h5><p>现在我们可以打开刚刚的<code>dumpthread</code>文件,找到关键信息:<br><img src="dumpthread.png" alt="dumpthread"><br>分析该文件我们可以得到如下信息:   </p>
+<ul>
+<li>①处说明线程<code>pool-1-thread-2</code>正在等待监视器锁(<code>synchronized</code>是基于对象监视器实现的),<code>waiting for monitor entry [0x000000001df2f000]</code></li>
+<li>②处说明了线程<code>pool-1-thread-2</code>处于阻塞(<code>BLOCKED (on object monitor)</code>)状态</li>
+<li>③处说明了该线程阻塞的原因，就是在等待锁,<code>waiting to lock &lt;0x000000076d9ef998&gt;</code></li>
+<li>④处说明了该线程已经拥有的锁，<code>locked &lt;0x000000076d9ef9b0&gt;</code><br>同理我们可以分析线程<code>pool-1-thread-1</code>的上诉信息.<br>接着我们对比下二者主要信息:  
+<table style="border-collapse:collapse;border-spacing:0" class="tg"><tr><th style="font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left"></th><th style="font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:center">状态</th><th style="font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:center">持有的锁</th><th style="font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:center;vertical-align:top">等待的锁</th></tr><tr><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left">pool-1-thread-1</td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left">阻塞（BLOCKED）</td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;background-color:#ffcb2f;text-align:left">0x000000076d9ef998</td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;background-color:#fe0000;text-align:left;vertical-align:top">0x000000076d9ef9b0</td></tr><tr><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left">pool-1-thread-2</td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left">阻塞（BLOCKED）</td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;background-color:#fe0000;text-align:left">0x000000076d9ef9b0</td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;background-color:#f8a102;text-align:left;vertical-align:top">0x000000076d9ef998</td></tr></table>
+
+我们可以情形看到线程1和线程2分别持有对方等待的锁，这样两个线程互不相让就造成了线程的死锁  <h4 id="顺序化资源防止死锁"><a href="#顺序化资源防止死锁" class="headerlink" title="顺序化资源防止死锁"></a>顺序化资源防止死锁</h4>为了解决上面例子中的多个对象嵌套同步方法/块调用，一个简单的方法就是将资源顺序化。   </li>
+</ul>
+<blockquote><p>顺序化资源的思想就是把每一个<code>synchronized</code>方法或块中的使用的对象与数字标签（用于比较排序）关联起来。如果同步操作根据对象的数字标签的最小最先(least-first)原则,那么他们就可以避免死锁，因为他们都会以同样的顺序获取到锁。普遍来说，在并发的设计中，为了打破对称或者强行设置优先次序，都可以使用顺序化资源的方式.<br>为了实现获取锁的顺序化，我们可以使用<code>System.identityHashCode</code>方法来将对象顺序化，在实际的运行系统中，该方法在很大程度上能保证唯一性;但是为了进一步保障安全，你应该覆盖hashCode方法或者使用其它方法生成唯一的数字标签.</p>
+<footer><strong>Doug Lea</strong><cite>Concurrent Programming in Java: Design Principles and Patterns(第2.2.6章顺序化资源)</cite></footer></blockquote>  
+
+<p>jdk中对<code>System.identityHashCode</code>方法描述为:  </p>
+<blockquote><p> Returns the same hash code for the given object as<br>would be returned by the default method hashCode(),<br>whether or not the given object’s class overrides<br>hashCode().<br>The hash code for the null reference is zero.</p>
+<footer><strong>javadoc</strong><cite><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/System.html#identityHashCode-java.lang.Object-">System.identityHashCode</a></cite></footer></blockquote>  
+<p>简单的说<code>System.identityHashCode</code>方法会调用给定对象的<code>默认的hashCode</code>方法，不管该对象是否已经覆写(<code>Override</code>)了<code>hashCode</code>方法.(不管对象x是否覆写hashCode方法，都始终会调用原始的默认的hashCode方法).  </p>
+<p>相关原理说到这里，我们来看看怎么利用顺序化资源和数字标签来避免死锁:  </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Cell2</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> value;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Cell2</span><span class="params">(<span class="keyword">long</span> value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.value = value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">long</span> <span class="title">getValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">setValue</span><span class="params">(<span class="keyword">long</span> value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.value = value;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span>  <span class="keyword">void</span> <span class="title">swapValue</span><span class="params">(Cell2 other)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span> == other)&#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(System.identityHashCode(<span class="keyword">this</span>) &lt; System.identityHashCode(other))&#123;</span><br><span class="line">            <span class="keyword">this</span>.doSwapValue(other);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            other.doSwapValue(<span class="keyword">this</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">doSwapValue</span><span class="params">(Cell2 other)</span></span>&#123;</span><br><span class="line">        <span class="keyword">long</span> v = <span class="keyword">this</span>.getValue();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            TimeUnit.SECONDS.sleep(<span class="number">1</span>);  <span class="comment">//用来模拟间隔时间</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">long</span> t = other.getValue();</span><br><span class="line">        <span class="keyword">this</span>.setValue(t);</span><br><span class="line">        other.setValue(v);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>我们重点注意代码第18-24行就是顺序化资源的实际使用,我们首先判断了两个对象是否是同一个对象，如果是那么就不用做后续操作，直接返回;接着我们通过<code>System.identityHashCode</code>方法来确定两个对象的顺序，从而确定在<code>doSwapValue</code>中按顺序的获取锁.<br>假设有两个Cell2的实例a,b，线程1执行<code>a.swapValue(b)</code>,线程2同时执行<code>b.swapValue(a)</code>,那么代码18-24行的执行逻辑如下:<br><img src="cell.png" alt="cell"><br>我们这里假设了<code>System.identityHashCode(a)</code>小于<code>System.identityHashCode(b)</code>,因此线程1,2经过<code>swapValue</code>中逻辑判断后都会变成执行<code>a.doSwapValue(b)</code>,这样一来，不论是<code>a.swapValue(b)</code>还是<code>b.swapValue(a)</code>,最终都是执行<code>a.doSwapValue(b)</code>,因此获取锁的顺序始终都是先获取a的锁再获取b的锁，因此不会出现死锁.<br>我们看一看获取锁的过程变化：  </p>
+
+<table style="border-collapse:collapse;border-spacing:0" class="tg"><tr><th style="font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left"></th><th style="font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left">线程1</th><th style="font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left">线程2</th></tr><tr><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left"><span style="font-style:italic">swapValue</span></td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left">a.swapValue(b)</td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left">b.swapValue(a)</td></tr><tr><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top">System.<span style="font-style:italic">identityHashCode</span></td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top">因为a &lt; b，所以代码第20行结果为true，执行代码第21行</td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top"> 因为b大于a，代码第20行结果为false,执行代码第23行</td></tr><tr><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left"><span style="font-style:italic">doSwapValue</span></td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left">a.doSwapValue(b)</td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left">a.doSwapValue(b)</td></tr><tr><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top">获取锁</td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top">尝试获取a上面的锁，成功</td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top"></td></tr><tr><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top"></td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top">尝试获取b上面的锁，成功</td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top">尝试获取a的锁，发现被被其它线程(线程1)占用了,只能等待</td></tr><tr><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top"></td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top">后续交换值的操作</td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top">等待</td></tr><tr><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top"></td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top">释放b的锁</td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top">等待</td></tr><tr><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top"></td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top">释放a的锁</td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top">等待</td></tr><tr><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top"></td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top"></td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top">再次尝试获取a的锁，成功</td></tr><tr><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top"></td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top"></td><td style="font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;text-align:left;vertical-align:top">尝试获取b的锁，成功...</td></tr></table>
+  
+
+<p>这里我们还可以进一步优化<code>doSwapValue</code>中的代码，因为我们在进入doSwapValue方法时已经获取到了必要的锁，那么就可以直接访问成员变量，而不再需要通过同步方法(<code>getValue</code>或者<code>setValue</code>)来获取/设置值了：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">doSwapValue</span><span class="params">(Cell2 other)</span></span>&#123;</span><br><span class="line">   <span class="keyword">synchronized</span> (other)&#123;</span><br><span class="line">       <span class="keyword">long</span> v = value;</span><br><span class="line">       value = other.value;</span><br><span class="line">       other.value=v;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面代码中，我们进入<code>a.doSwapValue(b)</code>时首先获取到了a的锁(通过方法上的<code>synchronized</code>关键字)，那么在这个同步方法体里面就没必要通过<code>a.getValue()</code>这个同步方法再次获取a锁了，可以直接访问<code>a.value</code>;进入方法后，我们再通过<code>synchronized (b)&#123;&#125;</code>同步块来获取b的锁，这样在同步代码块里面也可以直接访问<code>b.value</code>的值了，相比之前的代码有少许的性能优化.</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>这里主要总结了我们实际开发环境中经常遇到的嵌套调用同步方法中容易出现死锁的情形，并通过顺序化资源的思想来防止死锁.死锁的定义和例子等都是我阅读<code>Doug Lea</code>的书<code>Concurrent Programming in Java: Design Principles and Patterns</code>中列举的.后续还会进一步总结书中的经典之处.</p>
+<h4 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h4><ul>
+<li><em>Concurrent Programming in Java: Design Principles and Patterns</em> by Doug Lea,第2.2.5，2.2.6章</li>
+</ul>
+]]></content>
+      <categories>
+        <category>java并发</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>锁</tag>
+      </tags>
+  </entry>
+</search>
